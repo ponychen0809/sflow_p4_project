@@ -133,13 +133,69 @@ control MyIngress(
         default_action = NoAction;
     }
     Register<bit<32>, bit<1>>(1) total_packets_reg;
-
     RegisterAction<bit<32>, bit<1>, bit<32>>(total_packets_reg)
         incr_total = {
             void apply(inout bit<32> v, out bit<32> new_val) {
                 v       = v + 1;
                 new_val = v;          // 把 +1 後的值回傳
             }
+    };
+
+    Register<bit<32>,bit<1>>(1, 0) reg_ingress_port_0;
+    RegisterAction<bit<32>, bit<1>, bit<32>>(reg_ingress_port_0) reg_ingress_port_0_action_read_set = {
+        void apply(inout bit<32> register_val, out bit<32> read_val) {
+            read_val = register_val;
+            register_val = (bit<32>)user_md.ingress_port;
+        }
+    };
+    Register<bit<32>,bit<1>>(1, 0) reg_egress_port_0;
+    RegisterAction<bit<32>, bit<1>, bit<32>>(reg_egress_port_0) reg_egress_port_0_action_read_set = {
+        void apply(inout bit<32> register_val, out bit<32> read_val) {
+            read_val = register_val;
+            register_val = (bit<32>)user_md.egress_port;
+        }
+    };
+    Register<bit<32>,bit<1>>(1, 0) reg_pkt_length_0;
+    RegisterAction<bit<32>, bit<1>, bit<32>>(reg_pkt_length_0) reg_pkt_length_0_action_read_set = {
+        void apply(inout bit<32> register_val, out bit<32> read_val) {
+            read_val = register_val;
+            register_val = (bit<32>)user_md.pkt_length;
+        }
+    };
+    Register<bit<32>,bit<1>>(1, 0) reg_protocol_0;
+    RegisterAction<bit<32>, bit<1>, bit<32>>(reg_protocol_0) reg_protocol_0_action_read_set = {
+        void apply(inout bit<32> register_val, out bit<32> read_val) {
+            read_val = register_val;
+            register_val = (bit<32>)user_md.protocol;
+        }
+    };
+    Register<bit<32>,bit<1>>(1, 0) reg_src_ip_0;
+    RegisterAction<bit<32>, bit<1>, bit<32>>(reg_src_ip_0) reg_src_ip_0_action_read_set = {
+        void apply(inout bit<32> register_val, out bit<32> read_val) {
+            read_val = register_val;
+            register_val = (bit<32>)user_md.src_ip;
+        }
+    };
+    Register<bit<32>,bit<1>>(1, 0) reg_dst_ip_0;
+    RegisterAction<bit<32>, bit<1>, bit<32>>(reg_dst_ip_0) reg_dst_ip_0_action_read_set = {
+        void apply(inout bit<32> register_val, out bit<32> read_val) {
+            read_val = register_val;
+            register_val = (bit<32>)user_md.dst_ip;
+        }
+    };
+    Register<bit<32>,bit<1>>(1, 0) reg_src_port_0;
+    RegisterAction<bit<32>, bit<1>, bit<32>>(reg_src_port_0) reg_src_port_0_action_read_set = {
+        void apply(inout bit<32> register_val, out bit<32> read_val) {
+            read_val = register_val;
+            register_val = (bit<32>)user_md.src_port;
+        }
+    };
+    Register<bit<32>,bit<1>>(1, 0) reg_dst_port_0;
+    RegisterAction<bit<32>, bit<1>, bit<32>>(reg_dst_port_0) reg_dst_port_0_action_read_set = {
+        void apply(inout bit<32> register_val, out bit<32> read_val) {
+            read_val = register_val;
+            register_val = (bit<32>)user_md.dst_port;
+        }
     };
     apply {
         ipv4_table.apply();
@@ -273,8 +329,6 @@ control MyIngressDeparser(packet_out pkt,
                 hdr.sflow_sample.dst_port,
                 hdr.sflow_sample.tcp_flags,
                 hdr.sflow_sample.tos
-
-
             });
         }
 
