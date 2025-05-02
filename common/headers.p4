@@ -223,6 +223,10 @@ header sflow_sample_t {
     bit<32> tos;
 }
 
+header payload_t{
+    bit<864> data;
+}
+
 struct my_header_t {
     mirror_h        mirror;
     bridge_h        bridge;
@@ -232,6 +236,7 @@ struct my_header_t {
     udp_h           udp;
     sflow_t         sflow_hd;
     sflow_sample_t  sflow_sample;
+    payload_t       payload;
 }
 
 

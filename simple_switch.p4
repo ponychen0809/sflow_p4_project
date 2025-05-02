@@ -150,30 +150,24 @@ control MyIngress(
 
         hdr.bridge.ingress_port = (bit<32>)ig_intr_md.ingress_port;
         hdr.bridge.egress_port  = (bit<32>) ig_tm_md.ucast_egress_port;
-        hdr.udp.dst_port = (bit<16>)6345;
-        hdr.bridge.pkt_len      = meta.pkt_len;
-        hdr.bridge.protocol     = meta.protocol;
-        hdr.bridge.src_ip       = meta.src_ip;
-        hdr.bridge.dst_ip       = meta.dst_ip;
-        hdr.bridge.src_port     = meta.src_port;
-        hdr.bridge.dst_port     = meta.dst_port;
-        hdr.bridge.tcp_flag     = meta.tcp_flag;
-        hdr.bridge.tos          = meta.tos;
+        hdr.udp.dst_port = (bit<16>)6343;
+        hdr.udp.hdr_length = (bit<16>)116;
+
 
         hdr.sflow_hd.setValid();
         hdr.sflow_hd.version = (bit<32>)5;
         hdr.sflow_hd.address_type = (bit<32>)1;
-        hdr.sflow_hd.agent_addr = (bit<32>)5;
-        hdr.sflow_hd.sub_agent_id = (bit<32>)5;
-        hdr.sflow_hd.sequence_number = (bit<32>)5;
+        hdr.sflow_hd.agent_addr = (bit<32>)hdr.ipv4.src_addr;
+        hdr.sflow_hd.sub_agent_id = (bit<32>)0;
+        hdr.sflow_hd.sequence_number = (bit<32>)1;
         hdr.sflow_hd.uptime = (bit<32>)12345;
         hdr.sflow_hd.samples = (bit<32>)1;
 
         hdr.sflow_sample.setValid();
         hdr.sflow_sample.sample_type = (bit<32>)1;
-        hdr.sflow_sample.sample_length = (bit<32>)80;
+        hdr.sflow_sample.sample_length = (bit<32>)72;
         hdr.sflow_sample.sample_seq_num = (bit<32>)1;
-        hdr.sflow_sample.source_id = (bit<32>)1;
+        hdr.sflow_sample.source_id = (bit<32>)74;
         hdr.sflow_sample.sampling_rate = (bit<32>)256;
         hdr.sflow_sample.sample_pool = (bit<32>)1;
         hdr.sflow_sample.drops = (bit<32>)0;
@@ -190,6 +184,8 @@ control MyIngress(
         hdr.sflow_sample.dst_port = (bit<32>)hdr.udp.dst_port;
         hdr.sflow_sample.tcp_flags = (bit<32>)0;
         hdr.sflow_sample.tos = (bit<32>)hdr.ipv4.diffserv;
+
+        hdr.ipv4.total_len = (bit<16>)136;
         // hdr.bridge.pad0         = 0;
         if (hdr.ethernet.ether_type == ETHERTYPE_ARP) {
             multicast();
@@ -219,6 +215,8 @@ control MyIngressDeparser(packet_out pkt,
 
     /* Resource Definitions */
     Checksum() ipv4_checksum;
+    Checksum() udp_checksum;
+
     Mirror() m;
     apply {
         if(hdr.ipv4.isValid()){
@@ -234,6 +232,49 @@ control MyIngressDeparser(packet_out pkt,
                 hdr.ipv4.protocol,
                 hdr.ipv4.src_addr,
                 hdr.ipv4.dst_addr
+            });
+        }
+        if (hdr.ipv4.isValid() && hdr.udp.isValid()) {
+            hdr.udp.checksum = udp_checksum.update({
+                hdr.ipv4.src_addr,
+                hdr.ipv4.dst_addr,
+                8w0,
+                hdr.ipv4.protocol,
+                hdr.udp.hdr_length,
+                hdr.udp.src_port,
+                hdr.udp.dst_port,
+                hdr.udp.hdr_length,
+                16w0,              // placeholder for checksum
+                hdr.sflow_hd.version,
+                hdr.sflow_hd.address_type,
+                hdr.sflow_hd.agent_addr,
+                hdr.sflow_hd.sub_agent_id,
+                hdr.sflow_hd.sequence_number,
+                hdr.sflow_hd.uptime,
+                hdr.sflow_hd.samples,
+
+                hdr.sflow_sample.sample_type,
+                hdr.sflow_sample.sample_length,
+                hdr.sflow_sample.sample_seq_num,
+                hdr.sflow_sample.source_id,
+                hdr.sflow_sample.sampling_rate,
+                hdr.sflow_sample.sample_pool,
+                hdr.sflow_sample.drops,
+                hdr.sflow_sample.input_if,
+                hdr.sflow_sample.output_if,
+                hdr.sflow_sample.record_count,
+                hdr.sflow_sample.enterprise_format,
+                hdr.sflow_sample.flow_length,
+                hdr.sflow_sample.pkt_length,
+                hdr.sflow_sample.protocol,
+                hdr.sflow_sample.src_ip,
+                hdr.sflow_sample.dst_ip,
+                hdr.sflow_sample.src_port,
+                hdr.sflow_sample.dst_port,
+                hdr.sflow_sample.tcp_flags,
+                hdr.sflow_sample.tos
+
+
             });
         }
 
