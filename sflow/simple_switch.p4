@@ -651,7 +651,7 @@ control MyIngress(
 
 
             hdr.ipv4.total_len = (bit<16>)376;
-            truncate(390);
+            // truncate(390);
         }
 
     }
