@@ -251,7 +251,7 @@ class SimpleSwitchTest(BfRuntimeTest):
                 if udp_datagram:
                     send_packet(self, 320, udp_datagram)       
 
-        sniff(iface="enp1s0", prn=handle_pkt)
+        sniff(iface="enp6s0", prn=handle_pkt)
     
     def cleanUp(self):
         try:
