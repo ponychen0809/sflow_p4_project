@@ -252,6 +252,7 @@ control MyEgress(
             eg_intr_dprs_md.mirror_type = MIRROR_TYPE_E2E;
             eg_md.pkt_type = PKT_TYPE_MIRROR;
             eg_md.eg_mir_ses = 27;
+            eg_md.total_packets = total_packets_;
         }
 
         reflect.apply();
@@ -276,7 +277,8 @@ control MyEgressDeparser(
             mirror.emit<mirror_h>(eg_md.eg_mir_ses, {
                 0,
                 (bit<16>)eg_md.ingress_port,
-                (bit<16>)eg_md.egress_port
+                (bit<16>)eg_md.egress_port,
+                eg_md.total_packets
             });
         }
 
