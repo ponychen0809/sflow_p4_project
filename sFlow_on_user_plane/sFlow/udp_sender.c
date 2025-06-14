@@ -7,7 +7,7 @@
 #include <signal.h>
 #include <getopt.h>
 
-#define IP "10.10.3.1"
+#define IP "10.10.3.2"
 #define PORT 22222
 #define MAX 1024
 
