@@ -223,7 +223,7 @@ class SimpleSwitchTest(BfRuntimeTest):
         def handle_pkt(packet):
             if len(packet) != 56:
                 return
-
+            print("receive packet")
             pkt = bytes(packet)
 
             mirror = Mirror(pkt[MIRRORING_METADATA_OFFSET:MIRRORING_METADATA_OFFSET+MIRRORING_METADATA_LENGTH])
