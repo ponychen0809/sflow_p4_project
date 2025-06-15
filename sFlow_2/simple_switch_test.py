@@ -231,7 +231,7 @@ class SimpleSwitchTest(BfRuntimeTest):
             pkt = bytes(packet)
 
             mirror = Mirror(pkt[MIRRORING_METADATA_OFFSET:MIRRORING_METADATA_OFFSET+MIRRORING_METADATA_LENGTH])
-
+            print("total packet: ",mirror.total_packets)
             ethernet = Ether(pkt[ETHERNET_HEADER_OFFSET:ETHERNET_HEADER_OFFSET+ETHERNET_HEADER_LENGTH])
             
             if (ethernet.type != TYPE_IPV4):
