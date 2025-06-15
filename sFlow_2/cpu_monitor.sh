@@ -5,7 +5,7 @@ output_file="cpu_record.txt"
 
 echo "Collecting CPU usage every 0.1s, total 100 times..."
 
-for i in {1..100}; do
+for i in {1..50}; do
     timestamp=$(date +"%H:%M:%S.%3N")
     usage=$(top -bn1 | awk 'NR > 7 && $9 ~ /^[0-9.]+$/ { sum += $9 } END { print sum }')
     echo "$timestamp $usage" >> "$output_file"
