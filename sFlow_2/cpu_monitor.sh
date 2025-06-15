@@ -7,20 +7,17 @@ for i in {1..10}; do
     echo "PID     COMMAND              CPU(%)"
     echo "-------------------------------"
 
-    # 同時列出 process 與加總 CPU 使用率
-    round_total=$(top -bn1 | awk '
-    NR > 7 && $9 ~ /^[0-9.]+$/ && $9 > 0 {
-        pid = $1
-        cpu = $9
-        cmd = $12
-        printf "%-7s %-20s %6.2f\n", pid, cmd, cpu
-        sum += cpu
+    # 使用 ps 抓出有佔用 CPU 的 process
+    round_total=$(ps -eo pid=,comm=,pcpu= --sort=-pcpu | awk '
+    $3 > 0.0 {
+        printf "%-7s %-20s %6.2f\n", $1, $2, $3
+        total += $3
     }
     END {
         print "-------------------------------"
-        printf "Total CPU this round:     %6.2f%%\n", sum
-        print sum
-    }' | tee /tmp/sample_output.txt | tail -n 1)
+        printf "Total CPU this round:     %6.2f%%\n", total
+        print total
+    }' | tee /tmp/round.txt | tail -n 1)
 
     total=$(echo "$total + $round_total" | bc)
     sleep 1
