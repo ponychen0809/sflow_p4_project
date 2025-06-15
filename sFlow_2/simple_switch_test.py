@@ -225,6 +225,7 @@ class SimpleSwitchTest(BfRuntimeTest):
             
             if len(packet) != 56:
                 return
+            global pkt_count 
             pkt_count = pkt_count+1
             print("receive packet: ",pkt_count)
             pkt = bytes(packet)
