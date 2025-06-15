@@ -45,7 +45,7 @@ UDP_HEADER_LENGTH = 20
 TYPE_IPV4 = 0x0800
 PROTO_TCP = 6
 PROTO_UDP = 17
-
+pkt_count = 0
 class Mirror(Packet):
     name = "Mirror"
 
@@ -222,9 +222,11 @@ class SimpleSwitchTest(BfRuntimeTest):
         )
 
         def handle_pkt(packet):
+            
             if len(packet) != 56:
                 return
-            print("receive packet")
+            pkt_count = pkt_count+1
+            print("receive packet: ",pkt_count)
             pkt = bytes(packet)
 
             mirror = Mirror(pkt[MIRRORING_METADATA_OFFSET:MIRRORING_METADATA_OFFSET+MIRRORING_METADATA_LENGTH])
