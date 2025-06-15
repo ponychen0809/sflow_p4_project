@@ -10,14 +10,11 @@ for i in {1..5}; do
     echo "PID     COMMAND              CPU(%)"
     echo "-------------------------------"
 
-    # 取得 top 輸出並篩選有使用 CPU 的 process
-    sample_total=$(top -b -n1 | awk '
-    NR > 7 && $9 > 0 {
-        pid = $1
-        cpu = $9
-        cmd = $12
-        total += cpu
-        printf "%-7s %-20s %6.2f\n", pid, cmd, cpu
+    # 使用 ps 抓取所有有佔用 CPU 的 process（不含 0.0%）
+    sample_total=$(ps -eo pid,comm,%cpu --sort=-%cpu | awk '
+    NR > 1 && $3 > 0.0 {
+        printf "%-7s %-20s %6.2f\n", $1, $2, $3
+        total += $3
     }
     END {
         print "-------------------------------"
@@ -25,7 +22,6 @@ for i in {1..5}; do
         print total
     }' | tee /tmp/sample_output.txt | tail -n 1)
 
-    # 累加每輪的總 CPU 使用率
     total_sum=$(echo "$total_sum + $sample_total" | bc)
 
     sleep 1
