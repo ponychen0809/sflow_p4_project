@@ -1,10 +1,11 @@
 #!/bin/bash
 
 OUTPUT_FILE="cpu_record.txt"
-> "$OUTPUT_FILE"  # 清空檔案
+> "$OUTPUT_FILE"  # 清空舊內容
 
 declare -A cpu_sum
 declare -A count
+declare -A pid_cmd_map
 iterations=10
 
 echo "Monitoring CPU usage for $iterations seconds..."
@@ -20,12 +21,13 @@ for ((i=1; i<=iterations; i++)); do
         cpu=$(echo "$line" | awk '{print $2}')
         cmd=$(echo "$line" | cut -d' ' -f3-)
 
+        key="${pid}_${cmd}"  # ✅ 唯一辨識用
+        pid_cmd_map["$key"]="$pid $cmd"
+
         if [[ $(echo "$cpu > 0" | bc) -eq 1 ]]; then
             printf "PID=%s\tCPU=%.2f\tCMD=%s\n" "$pid" "$cpu" "$cmd"
         fi
 
-        # ✅ 用 CMD 作為 key，把相同名稱的程式合併統計
-        key="$cmd"
         cpu_sum["$key"]=$(echo "${cpu_sum[$key]:-0} + $cpu" | bc)
         count["$key"]=$(( ${count[$key]:-0} + 1 ))
     done
@@ -33,22 +35,24 @@ for ((i=1; i<=iterations; i++)); do
     sleep 1
 done
 
-# 🔽 輸出時正確排序並過濾 avg = 0
+# ✅ 建立排序用暫存檔（每行：PID\tCMD\tAVG_CPU）
 TMP_RESULT=$(mktemp)
-
-for cmd in "${!cpu_sum[@]}"; do
-    avg=$(echo "scale=2; ${cpu_sum[$cmd]} / ${count[$cmd]}" | bc)
+for key in "${!cpu_sum[@]}"; do
+    avg=$(echo "scale=2; ${cpu_sum[$key]} / ${count[$key]}" | bc)
     if [[ $(echo "$avg > 0" | bc) -eq 1 ]]; then
-        printf "%-20s\t%s\n" "$cmd" "$avg" >> "$TMP_RESULT"
+        pid=$(echo "${pid_cmd_map[$key]}" | cut -d' ' -f1)
+        cmd=$(echo "${pid_cmd_map[$key]}" | cut -d' ' -f2-)
+        printf "%s\t%s\t%s\n" "$pid" "$cmd" "$avg" >> "$TMP_RESULT"
     fi
 done
 
-# 輸出表頭與排序內容
+# ✅ 寫入表頭與排序後內容
 {
-    echo -e "COMMAND\t\t\tAVG_CPU(%)"
-    sort -t $'\t' -k2,2nr "$TMP_RESULT"
+    echo -e "PID\tCOMMAND\t\tAVG_CPU(%)"
+    sort -k3,3nr "$TMP_RESULT"
 } > "$OUTPUT_FILE"
 
+# ✅ 顯示結果
 echo -e "\nSummary (saved to $OUTPUT_FILE):"
 cat "$OUTPUT_FILE"
 rm "$TMP_RESULT"
