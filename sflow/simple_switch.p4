@@ -877,7 +877,7 @@ control MyEgress(
     // }
 
     apply {
-        eg_intr_dprs_md.packet_length = 390;
+        // eg_intr_dprs_md.packet_length = 390;
 
         // bit<9> in_port  = (bit<9>) eg_md.ingress_port;
         // bit<9> out_port = (bit<9>) eg_intr_md.egress_port;
