@@ -1,15 +1,19 @@
 #!/bin/bash
 
-total=0
+output_file="cpu_record.txt"
+> "$output_file"  # 清空舊檔
 
-for i in {1..10}; do
-    echo "===== Sample $i ====="
-    usage=$(top -bn1 | awk 'NR > 7 && $9 ~ /^[0-9.]+$/ { sum += $9; printf "%-6s %-20s %5s%%\n", $1, $12, $9 } END { print "------------------------"; printf "Total: %.2f\n", sum }' | tee /tmp/out.txt | tail -n 1 | cut -d':' -f2)
-    total=$(echo "$total + $usage" | bc)
-    sleep 1
+echo "Collecting CPU usage every 0.5s, total 20 times..."
+
+for i in {1..20}; do
+    timestamp=$(date +"%H:%M:%S")
+    usage=$(top -bn1 | awk 'NR > 7 && $9 ~ /^[0-9.]+$/ { sum += $9 } END { print sum }')
+    echo "$timestamp $usage" >> "$output_file"
+    echo "[$i] $timestamp → CPU: $usage%"
+    sleep 0.5
 done
 
-average=$(echo "scale=2; $total / 10" | bc)
-echo
-echo "============================"
-echo "Average total CPU usage: $average%"
+# 計算平均
+average=$(awk '{sum += $2} END {if (NR>0) printf "Average CPU usage: %.2f%%\n", sum / NR}' "$output_file")
+echo "==============================="
+echo "$average"
