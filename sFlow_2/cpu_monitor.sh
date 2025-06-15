@@ -10,9 +10,9 @@ for i in {1..5}; do
     echo "PID     COMMAND              CPU(%)"
     echo "-------------------------------"
 
-    # 使用 ps 抓取所有有佔用 CPU 的 process（不含 0.0%）
-    sample_total=$(ps -eo pid,comm,%cpu --sort=-%cpu | awk '
-    NR > 1 && $3 > 0.0 {
+    # 使用 ps 並避免欄位名稱混淆
+    sample_total=$(ps -eo pid=,comm=,pcpu= --sort=-pcpu | awk '
+    $3 > 0.0 {
         printf "%-7s %-20s %6.2f\n", $1, $2, $3
         total += $3
     }
