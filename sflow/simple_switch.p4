@@ -501,9 +501,8 @@ control MyIngress(
             tmp_ingress_port =1;
         }else if(ig_intr_md.ingress_port == 147){
             tmp_ingress_port =1;
-        }else{
-            tmp_ingress_port =0;
         }
+        
         bit<32> total_packet; 
         if( tmp_ingress_port == 1){
             total_packet = set_total_packet.execute(0);
