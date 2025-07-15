@@ -498,10 +498,18 @@ control MyIngress(
         }
         bit<9> tmp_ingress_port;
 
-        tmp_ingress_port = ig_intr_md.ingress_port-144;
+        if(ig_intr_md.ingress_port == 144){
+            tmp_ingress_port =1;
+        }else if(ig_intr_md.ingress_port == 145){
+            tmp_ingress_port =1;
+        }else if(ig_intr_md.ingress_port == 146){
+            tmp_ingress_port =1;
+        }else if(ig_intr_md.ingress_port == 147){
+            tmp_ingress_port =1;
+        }
 
 
-        if(total_packet % 256 == 0 && tmp_ingress_port >= 0 && tmp_ingress_port<=3){
+        if(total_packet % 256 == 0 && tmp_ingress_port == 1){
            
                 bit<32> total_sample = set_total_sample.execute(0);
                 if(total_sample == 1){
