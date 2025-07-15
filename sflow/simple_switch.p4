@@ -568,7 +568,7 @@ control MyIngress(
             ig_tm_md.ucast_egress_port = 147;
             hdr.udp.dst_port = (bit<16>)6343;
             hdr.udp.hdr_length = (bit<16>)356;
-            hdr.ipv4.dst_addr = 0x0a0a0302;
+            // hdr.ipv4.dst_addr = 0x0a0a0302;
             hdr.sflow_hd.setValid();
             hdr.sflow_hd.version = (bit<32>)5;
             hdr.sflow_hd.address_type = (bit<32>)1;
