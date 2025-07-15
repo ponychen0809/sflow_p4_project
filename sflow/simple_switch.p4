@@ -506,17 +506,13 @@ control MyIngress(
             tmp_ingress_port =1;
             total_packet = set_total_packet.execute(0);
         }else{
+            tmp_ingress_port =0;
             total_packet = 1;
         }
          
-        // if( ig_intr_md.ingress_port == 144){
-            
-        // }else{
-            
-        // }
+ 
 
         if(total_packet % 256 == 0 && tmp_ingress_port == 1){
-           
                 bit<32> total_sample = set_total_sample.execute(0);
                 if(total_sample == 1){
                     hdr.sflow_sample_0.input_if = reg_ingress_port_0_action_read_set.execute(0);
@@ -569,7 +565,7 @@ control MyIngress(
             
             
         }else if(ig_intr_md.ingress_port == 132){
-            // ig_tm_md.ucast_egress_port = 144;
+            ig_tm_md.ucast_egress_port = 144;
             hdr.udp.dst_port = (bit<16>)6343;
             hdr.udp.hdr_length = (bit<16>)356;
 
