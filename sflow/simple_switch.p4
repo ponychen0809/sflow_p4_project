@@ -496,8 +496,9 @@ control MyIngress(
         }else{
             total_packet = 1;
         }
-      
-        if(total_packet % 256 == 0 && ig_intr_md.ingress_port == 144){
+        bit<32> tmp_ingress_port;
+        tmp_ingress_port = ig_intr_md.ingress_port-144;
+        if(total_packet % 256 == 0 && tmp_ingress_port >= 0 && tmp_ingress_port<=3){
            
                 bit<32> total_sample = set_total_sample.execute(0);
                 if(total_sample == 1){
