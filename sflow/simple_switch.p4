@@ -491,14 +491,14 @@ control MyIngress(
         
         // ig_tm_md.ucast_egress_port = 144;
         bit<32> total_packet; 
-        if( ig_intr_md.ingress_port == 144 || ig_intr_md.ingress_port == 147 || ig_intr_md.ingress_port == 146 || ig_intr_md.ingress_port == 145){
+        if( ig_intr_md.ingress_port == 144){
             total_packet = set_total_packet.execute(0);
         }else{
             total_packet = 1;
         }
       
         if(total_packet % 256 == 0){
-            if( ig_intr_md.ingress_port == 144 || ig_intr_md.ingress_port == 147 || ig_intr_md.ingress_port == 146 || ig_intr_md.ingress_port == 145){
+            if( ig_intr_md.ingress_port == 144 ){
                 bit<32> total_sample = set_total_sample.execute(0);
                 if(total_sample == 1){
                     hdr.sflow_sample_0.input_if = reg_ingress_port_0_action_read_set.execute(0);
