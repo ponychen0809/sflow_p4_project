@@ -491,62 +491,65 @@ control MyIngress(
         
         // ig_tm_md.ucast_egress_port = 144;
         bit<32> total_packet; 
-        if( ig_intr_md.ingress_port == 144){
+        if( ig_intr_md.ingress_port == 144 || ig_intr_md.ingress_port == 147 || ig_intr_md.ingress_port == 146 || ig_intr_md.ingress_port == 145){
             total_packet = set_total_packet.execute(0);
         }else{
             total_packet = 1;
         }
       
-        if(total_packet % 256 == 0 && ig_intr_md.ingress_port == 144){
-            bit<32> total_sample = set_total_sample.execute(0);
-            if(total_sample == 1){
-                hdr.sflow_sample_0.input_if = reg_ingress_port_0_action_read_set.execute(0);
-                hdr.sflow_sample_0.output_if = reg_egress_port_0_action_read_set.execute(0);
-                hdr.sflow_sample_0.pkt_length = reg_pkt_length_0_action_read_set.execute(0);
-                hdr.sflow_sample_0.protocol = reg_protocol_0_action_read_set.execute(0);
-                hdr.sflow_sample_0.src_ip = reg_src_ip_0_action_read_set.execute(0);
-                hdr.sflow_sample_0.dst_ip = reg_dst_ip_0_action_read_set.execute(0);
-                hdr.sflow_sample_0.src_port = reg_src_port_0_action_read_set.execute(0);
-                hdr.sflow_sample_0.dst_port = reg_dst_port_0_action_read_set.execute(0);
-                hdr.sflow_sample_0.tcp_flags = reg_tcp_flag_0_action_read_set.execute(0);
-                hdr.sflow_sample_0.tos = reg_tos_0_action_read_set.execute(0);
-                // t_set_egress_144.apply();
-            }else if (total_sample == 2){
-                hdr.sflow_sample_1.input_if = reg_ingress_port_1_action_read_set.execute(0);
-                hdr.sflow_sample_1.output_if = reg_egress_port_1_action_read_set.execute(0);
-                hdr.sflow_sample_1.pkt_length = reg_pkt_length_1_action_read_set.execute(0);
-                hdr.sflow_sample_1.protocol = reg_protocol_1_action_read_set.execute(0);
-                hdr.sflow_sample_1.src_ip = reg_src_ip_1_action_read_set.execute(0);
-                hdr.sflow_sample_1.dst_ip = reg_dst_ip_1_action_read_set.execute(0);
-                hdr.sflow_sample_1.src_port = reg_src_port_1_action_read_set.execute(0);
-                hdr.sflow_sample_1.dst_port = reg_dst_port_1_action_read_set.execute(0);
-                hdr.sflow_sample_1.tcp_flags = reg_tcp_flag_1_action_read_set.execute(0);
-                hdr.sflow_sample_1.tos = reg_tos_1_action_read_set.execute(0);
-            }else if (total_sample == 3){
-                hdr.sflow_sample_2.input_if = reg_ingress_port_2_action_read_set.execute(0);
-                hdr.sflow_sample_2.output_if = reg_egress_port_2_action_read_set.execute(0);
-                hdr.sflow_sample_2.pkt_length = reg_pkt_length_2_action_read_set.execute(0);
-                hdr.sflow_sample_2.protocol = reg_protocol_2_action_read_set.execute(0);
-                hdr.sflow_sample_2.src_ip = reg_src_ip_2_action_read_set.execute(0);
-                hdr.sflow_sample_2.dst_ip = reg_dst_ip_2_action_read_set.execute(0);
-                hdr.sflow_sample_2.src_port = reg_src_port_2_action_read_set.execute(0);
-                hdr.sflow_sample_2.dst_port = reg_dst_port_2_action_read_set.execute(0);
-                hdr.sflow_sample_2.tcp_flags = reg_tcp_flag_2_action_read_set.execute(0);
-                hdr.sflow_sample_2.tos = reg_tos_2_action_read_set.execute(0);
-   
-            }else{
-                hdr.sflow_sample_3.input_if = reg_ingress_port_3_action_read_set.execute(0);
-                hdr.sflow_sample_3.output_if = reg_egress_port_3_action_read_set.execute(0);
-                hdr.sflow_sample_3.pkt_length = reg_pkt_length_3_action_read_set.execute(0);
-                hdr.sflow_sample_3.protocol = reg_protocol_3_action_read_set.execute(0);
-                hdr.sflow_sample_3.src_ip = reg_src_ip_3_action_read_set.execute(0);
-                hdr.sflow_sample_3.dst_ip = reg_dst_ip_3_action_read_set.execute(0);
-                hdr.sflow_sample_3.src_port = reg_src_port_3_action_read_set.execute(0);
-                hdr.sflow_sample_3.dst_port = reg_dst_port_3_action_read_set.execute(0);
-                hdr.sflow_sample_3.tcp_flags = reg_tcp_flag_3_action_read_set.execute(0);
-                send_multicast(1, 1);
-                
+        if(total_packet % 256 == 0){
+            if( ig_intr_md.ingress_port == 144 || ig_intr_md.ingress_port == 147 || ig_intr_md.ingress_port == 146 || ig_intr_md.ingress_port == 145){
+                bit<32> total_sample = set_total_sample.execute(0);
+                if(total_sample == 1){
+                    hdr.sflow_sample_0.input_if = reg_ingress_port_0_action_read_set.execute(0);
+                    hdr.sflow_sample_0.output_if = reg_egress_port_0_action_read_set.execute(0);
+                    hdr.sflow_sample_0.pkt_length = reg_pkt_length_0_action_read_set.execute(0);
+                    hdr.sflow_sample_0.protocol = reg_protocol_0_action_read_set.execute(0);
+                    hdr.sflow_sample_0.src_ip = reg_src_ip_0_action_read_set.execute(0);
+                    hdr.sflow_sample_0.dst_ip = reg_dst_ip_0_action_read_set.execute(0);
+                    hdr.sflow_sample_0.src_port = reg_src_port_0_action_read_set.execute(0);
+                    hdr.sflow_sample_0.dst_port = reg_dst_port_0_action_read_set.execute(0);
+                    hdr.sflow_sample_0.tcp_flags = reg_tcp_flag_0_action_read_set.execute(0);
+                    hdr.sflow_sample_0.tos = reg_tos_0_action_read_set.execute(0);
+                    // t_set_egress_144.apply();
+                }else if (total_sample == 2){
+                    hdr.sflow_sample_1.input_if = reg_ingress_port_1_action_read_set.execute(0);
+                    hdr.sflow_sample_1.output_if = reg_egress_port_1_action_read_set.execute(0);
+                    hdr.sflow_sample_1.pkt_length = reg_pkt_length_1_action_read_set.execute(0);
+                    hdr.sflow_sample_1.protocol = reg_protocol_1_action_read_set.execute(0);
+                    hdr.sflow_sample_1.src_ip = reg_src_ip_1_action_read_set.execute(0);
+                    hdr.sflow_sample_1.dst_ip = reg_dst_ip_1_action_read_set.execute(0);
+                    hdr.sflow_sample_1.src_port = reg_src_port_1_action_read_set.execute(0);
+                    hdr.sflow_sample_1.dst_port = reg_dst_port_1_action_read_set.execute(0);
+                    hdr.sflow_sample_1.tcp_flags = reg_tcp_flag_1_action_read_set.execute(0);
+                    hdr.sflow_sample_1.tos = reg_tos_1_action_read_set.execute(0);
+                }else if (total_sample == 3){
+                    hdr.sflow_sample_2.input_if = reg_ingress_port_2_action_read_set.execute(0);
+                    hdr.sflow_sample_2.output_if = reg_egress_port_2_action_read_set.execute(0);
+                    hdr.sflow_sample_2.pkt_length = reg_pkt_length_2_action_read_set.execute(0);
+                    hdr.sflow_sample_2.protocol = reg_protocol_2_action_read_set.execute(0);
+                    hdr.sflow_sample_2.src_ip = reg_src_ip_2_action_read_set.execute(0);
+                    hdr.sflow_sample_2.dst_ip = reg_dst_ip_2_action_read_set.execute(0);
+                    hdr.sflow_sample_2.src_port = reg_src_port_2_action_read_set.execute(0);
+                    hdr.sflow_sample_2.dst_port = reg_dst_port_2_action_read_set.execute(0);
+                    hdr.sflow_sample_2.tcp_flags = reg_tcp_flag_2_action_read_set.execute(0);
+                    hdr.sflow_sample_2.tos = reg_tos_2_action_read_set.execute(0);
+    
+                }else{
+                    hdr.sflow_sample_3.input_if = reg_ingress_port_3_action_read_set.execute(0);
+                    hdr.sflow_sample_3.output_if = reg_egress_port_3_action_read_set.execute(0);
+                    hdr.sflow_sample_3.pkt_length = reg_pkt_length_3_action_read_set.execute(0);
+                    hdr.sflow_sample_3.protocol = reg_protocol_3_action_read_set.execute(0);
+                    hdr.sflow_sample_3.src_ip = reg_src_ip_3_action_read_set.execute(0);
+                    hdr.sflow_sample_3.dst_ip = reg_dst_ip_3_action_read_set.execute(0);
+                    hdr.sflow_sample_3.src_port = reg_src_port_3_action_read_set.execute(0);
+                    hdr.sflow_sample_3.dst_port = reg_dst_port_3_action_read_set.execute(0);
+                    hdr.sflow_sample_3.tcp_flags = reg_tcp_flag_3_action_read_set.execute(0);
+                    send_multicast(1, 1);
+
+                }
             }
+            
         }else if(ig_intr_md.ingress_port == 132){
             // ig_tm_md.ucast_egress_port = 144;
             hdr.udp.dst_port = (bit<16>)6343;
