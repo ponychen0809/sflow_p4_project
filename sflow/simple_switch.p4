@@ -499,7 +499,7 @@ control MyIngress(
         }else if(ig_intr_md.ingress_port == 145){
             tmp_ingress_port =1;
             total_packet = set_total_packet.execute(0);
-        }else if(ig_intr_md.ingress_port == 146){
+        }else if(ig_intr_md.ingress_port == 149){
             tmp_ingress_port =1;
             total_packet = set_total_packet.execute(0);
         }else if(ig_intr_md.ingress_port == 147){
