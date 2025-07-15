@@ -492,22 +492,28 @@ control MyIngress(
         // ig_tm_md.ucast_egress_port = 144;
         
         bit<9> tmp_ingress_port;
-
+        bit<32> total_packet;
         if(ig_intr_md.ingress_port == 144){
             tmp_ingress_port =1;
+            total_packet = set_total_packet.execute(0);
         }else if(ig_intr_md.ingress_port == 145){
             tmp_ingress_port =1;
+            total_packet = set_total_packet.execute(0);
         }else if(ig_intr_md.ingress_port == 146){
             tmp_ingress_port =1;
+            total_packet = set_total_packet.execute(0);
         }else if(ig_intr_md.ingress_port == 147){
             tmp_ingress_port =1;
-        }
-        bit<32> total_packet; 
-        if( ig_intr_md.ingress_port == 144){
             total_packet = set_total_packet.execute(0);
         }else{
             total_packet = 1;
         }
+         
+        // if( ig_intr_md.ingress_port == 144){
+            
+        // }else{
+            
+        // }
 
         if(total_packet % 256 == 0 && tmp_ingress_port == 1){
            
