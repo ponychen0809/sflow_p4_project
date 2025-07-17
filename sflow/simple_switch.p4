@@ -512,7 +512,7 @@ control MyIngress(
          
  
 
-        if(total_packet % 32 == 0 && tmp_ingress_port == 1){
+        if(total_packet % 2 == 0 && tmp_ingress_port == 1){
                 bit<32> total_sample = set_total_sample.execute(0);
                 if(total_sample == 1){
                     hdr.sflow_sample_0.input_if = reg_ingress_port_0_action_read_set.execute(0);
