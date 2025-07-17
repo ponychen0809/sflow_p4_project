@@ -1,7 +1,7 @@
 #!/bin/bash
 
 SESSION="iperf_test"
-IPERF_CMD="iperf -c 10.10.3.5 -u -b 2G -l 512 -t 30"
+IPERF_CMD="iperf -c 10.10.3.5 -u -b 1G -l 512 -t 30"
 
 # 建立 tmux session（不附帶 shell）
 tmux new-session -d -s $SESSION
