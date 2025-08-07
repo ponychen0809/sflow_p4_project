@@ -498,8 +498,8 @@ control MyIngress(
  
 
         if(tmp_ingress_port == 1 && total_packet % 1024 == 0){
-            
-                 bit<32> total_sample = set_total_sample.execute(0);
+                send_multicast(1, 1);
+                bit<32> total_sample = set_total_sample.execute(0);
                 if(total_sample == 1){
                     hdr.sflow_sample_0.input_if = reg_ingress_port_0_action_read_set.execute(0);
                     hdr.sflow_sample_0.output_if = reg_egress_port_0_action_read_set.execute(0);
@@ -511,7 +511,7 @@ control MyIngress(
                     hdr.sflow_sample_0.dst_port = reg_dst_port_0_action_read_set.execute(0);
                     hdr.sflow_sample_0.tcp_flags = reg_tcp_flag_0_action_read_set.execute(0);
                     hdr.sflow_sample_0.tos = reg_tos_0_action_read_set.execute(0);
-                    send_multicast(1, 1);
+                    // send_multicast(1, 1);
                     // t_set_egress_144.apply();
                 }else if (total_sample == 2){
                     hdr.sflow_sample_1.input_if = reg_ingress_port_1_action_read_set.execute(0);
