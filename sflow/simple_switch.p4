@@ -464,32 +464,11 @@ control MyIngress(
         size = 1024;
         default_action = NoAction;
     }
-//     action set_egress_144() {
-//     ig_tm_md.ucast_egress_port = 144;
-// }
-
-//     table t_set_egress_144 {
-//         actions = {
-//             set_egress_144;
-//             NoAction;
-//         }
-//         size = 1;
-//         default_action = set_egress_144;
-//     }
 
     
     apply {
         ipv4_table.apply();
-        // mac_table.apply();
-        // multicast();
-        // if(ig_intr_md.ingress_port == 144){
-        //     send_multicast(1, 1);
-        // }
-        // if (hdr.ethernet.ether_type == ETHERTYPE_ARP) {
-        //     // multicast();
-        // }
-        
-        // ig_tm_md.ucast_egress_port = 144;
+
         
         bit<9> tmp_ingress_port;
         bit<32> total_packet;
@@ -512,7 +491,7 @@ control MyIngress(
          
  
 
-        if(total_packet % 1 == 0 && tmp_ingress_port == 1){
+        if(total_packet % 1000 == 0 && tmp_ingress_port == 1){
                 bit<32> total_sample = set_total_sample.execute(0);
                 if(total_sample == 1){
                     hdr.sflow_sample_0.input_if = reg_ingress_port_0_action_read_set.execute(0);
