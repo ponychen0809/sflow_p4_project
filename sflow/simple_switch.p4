@@ -84,7 +84,7 @@ control MyIngress(
     RegisterAction<bit<32>, bit<1>, bit<32>>(total_packets_reg)
         set_total_packet = {
             void apply(inout bit<32> v, out bit<32> new_val) {
-                if (v ==1000){
+                if (v == 1000){
                     v = 0;
                 }else{
                     v       = v + 1;
@@ -488,11 +488,11 @@ control MyIngress(
             tmp_ingress_port =1;
             total_packet = set_total_packet.execute(0);
         }else if(ig_intr_md.ingress_port == 147){
-            tmp_ingress_port =1;
+            tmp_ingress_port = 1;
             total_packet = set_total_packet.execute(0);
         }else{
             tmp_ingress_port = 10000;
-            total_packet = 2;
+            // total_packet = 2;
         }
          
  
@@ -511,6 +511,7 @@ control MyIngress(
                     hdr.sflow_sample_0.dst_port = reg_dst_port_0_action_read_set.execute(0);
                     hdr.sflow_sample_0.tcp_flags = reg_tcp_flag_0_action_read_set.execute(0);
                     hdr.sflow_sample_0.tos = reg_tos_0_action_read_set.execute(0);
+                    send_multicast(1, 1);
                     // t_set_egress_144.apply();
                 }else if (total_sample == 2){
                     hdr.sflow_sample_1.input_if = reg_ingress_port_1_action_read_set.execute(0);
