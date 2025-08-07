@@ -84,7 +84,7 @@ control MyIngress(
     RegisterAction<bit<32>, bit<1>, bit<32>>(total_packets_reg)
         set_total_packet = {
             void apply(inout bit<32> v, out bit<32> new_val) {
-                if (v = 1000){
+                if (v ==1000){
                     v = 0;
                 }else{
                     v       = v + 1;
