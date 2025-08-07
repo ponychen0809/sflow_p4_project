@@ -482,13 +482,13 @@ control MyIngress(
             tmp_ingress_port =1;
             total_packet = set_total_packet.execute(0);
         }else if(ig_intr_md.ingress_port == 145){
-            tmp_ingress_port =1;
+            tmp_ingress_port =10000;
             total_packet = set_total_packet.execute(0);
         }else if(ig_intr_md.ingress_port == 149){
-            tmp_ingress_port =1;
+            tmp_ingress_port =10000;
             total_packet = set_total_packet.execute(0);
         }else if(ig_intr_md.ingress_port == 147){
-            tmp_ingress_port = 1;
+            tmp_ingress_port = 10000;
             total_packet = set_total_packet.execute(0);
         }else{
             tmp_ingress_port = 10000;
