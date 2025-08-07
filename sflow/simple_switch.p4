@@ -431,30 +431,12 @@ control MyIngress(
         }
     }; 
 //******************************************************//
-       
-    // action multicast() {
-    //     ig_tm_md.mcast_grp_a = 1;
-    //     hdr.ipv4.ttl = hdr.ipv4.ttl - 1;
-    // }
-
-    // action broadcast() {
-    //     ig_tm_md.mcast_grp_a = 1;
-    // }
 
     action send_multicast(bit<16> grp_id, bit<16> rid) {
         ig_tm_md.mcast_grp_a = grp_id;
         ig_tm_md.rid = rid;
     }
 
-    // action simple_forward(PortId_t port) {
-    //     ig_tm_md.ucast_egress_port = port;
-    // }
-
-    // action send_back() {
-    //     ig_tm_md.ucast_egress_port = ig_intr_md.ingress_port;
-    //     hdr.ethernet.dst_addr = hdr.ethernet.src_addr;
-    //     hdr.ipv4.dst_addr = hdr.ipv4.src_addr;
-    // }
 
     action ipv4_forward(PortId_t port) {
         ig_tm_md.ucast_egress_port = port;
@@ -483,13 +465,13 @@ control MyIngress(
             total_packet = set_total_packet.execute(0);
         }else if(ig_intr_md.ingress_port == 145){
             tmp_ingress_port =10000;
-            total_packet = set_total_packet.execute(0);
+            // total_packet = set_total_packet.execute(0);
         }else if(ig_intr_md.ingress_port == 149){
             tmp_ingress_port =10000;
-            total_packet = set_total_packet.execute(0);
+            // total_packet = set_total_packet.execute(0);
         }else if(ig_intr_md.ingress_port == 147){
             tmp_ingress_port = 10000;
-            total_packet = set_total_packet.execute(0);
+            // total_packet = set_total_packet.execute(0);
         }else{
             tmp_ingress_port = 10000;
             // total_packet = 2;
