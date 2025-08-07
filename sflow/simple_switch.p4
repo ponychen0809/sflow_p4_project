@@ -497,7 +497,7 @@ control MyIngress(
          
  
 
-        if(tmp_ingress_port == 1 && total_packet == 1){
+        if(tmp_ingress_port == 1 && total_packet % 1 == 0){
             
                  bit<32> total_sample = set_total_sample.execute(0);
                 if(total_sample == 1){
