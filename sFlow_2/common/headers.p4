@@ -49,7 +49,7 @@ typedef bit<3> mirror_type_t;
 const mirror_type_t MIRROR_TYPE_I2E = 1;
 const mirror_type_t MIRROR_TYPE_E2E = 2;
 
-const bit<32> SAMPLING_RATE = 1000;
+const bit<32> SAMPLING_RATE = 1024;
 
 header ethernet_h {
     mac_addr_t dst_addr;
