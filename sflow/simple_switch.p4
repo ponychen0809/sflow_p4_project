@@ -493,8 +493,6 @@ control MyIngress(
                     hdr.sflow_sample_0.dst_port = reg_dst_port_0_action_read_set.execute(0);
                     hdr.sflow_sample_0.tcp_flags = reg_tcp_flag_0_action_read_set.execute(0);
                     hdr.sflow_sample_0.tos = reg_tos_0_action_read_set.execute(0);
-                    // send_multicast(1, 1);
-                    // t_set_egress_144.apply();
                 }else if (total_sample == 2){
                     hdr.sflow_sample_1.input_if = reg_ingress_port_1_action_read_set.execute(0);
                     hdr.sflow_sample_1.output_if = reg_egress_port_1_action_read_set.execute(0);
@@ -808,7 +806,6 @@ parser MyEgressParser(
     }
 
     state parse_bridge {
-        // pkt.extract(hdr.bridge);
         transition parse_ethernet;
     }
 
@@ -838,29 +835,10 @@ control MyEgress(
         eg_intr_dprs_md.drop_ctl = 0b1;
     }
 
-    // table reflect {
-    //     key = {
-    //         hdr.ipv4.src_addr: exact;
-    //         eg_intr_md.egress_port: exact;
-    //     }
 
-    //     actions = {
-    //         drop;
-    //         NoAction;
-    //     }
-
-    //     default_action = NoAction;
-    // }
 
     apply {
-        // eg_intr_dprs_md.packet_length = 390;
 
-        // bit<9> in_port  = (bit<9>) eg_md.ingress_port;
-        // bit<9> out_port = (bit<9>) eg_intr_md.egress_port;
-
-        // if (eg_md.ingress_port == 147) {
-        //     drop();
-        // }
  
     }
 }
