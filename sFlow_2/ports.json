@@ -2,7 +2,7 @@
     "PortToIf": [
         {
             "device_port":320,
-            "if":"veth1@veth0"
+            "if":"veth1"
         }
     ]
 }
