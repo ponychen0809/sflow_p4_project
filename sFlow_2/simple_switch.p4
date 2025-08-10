@@ -248,7 +248,7 @@ control MyEgress(
         total_packets_ = total_packets_ + 1;
 
         // Every 256 packets forwarded, mark the packet to be mirrored.
-        if (total_packets_ % SAMPLING_RATE == 0) {
+        if (total_packets_ % 1024 == 0) {
             eg_intr_dprs_md.mirror_type = MIRROR_TYPE_E2E;
             eg_md.pkt_type = PKT_TYPE_MIRROR;
             eg_md.eg_mir_ses = 27;
