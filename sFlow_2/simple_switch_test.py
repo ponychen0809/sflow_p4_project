@@ -222,7 +222,7 @@ class SimpleSwitchTest(BfRuntimeTest):
         )
 
         def handle_pkt(packet):
-            
+            print("=====")
             if len(packet) != 56:
                 return
             global pkt_count 
