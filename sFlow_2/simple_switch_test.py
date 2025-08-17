@@ -295,7 +295,7 @@ class SimpleSwitchTest(BfRuntimeTest):
 
         # --- 2) worker thread：從 FIFO 取封包，解析並送出 sFlow datagram ---
         def _consumer():
-            print(threading.current_thread().name)
+            print(threading.current_thread().name," === start...")
             while not stop_evt.is_set() or not q.empty():
                 try:
                     raw = q.get(timeout=0.5)
