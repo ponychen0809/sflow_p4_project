@@ -277,7 +277,7 @@ class SimpleSwitchTest(BfRuntimeTest):
                     raw = bytes(pkt)
                     # 可加入基本過濾（例如最小長度），降低 worker 壓力
                     if len(raw) >= 50:
-                        print(11111)
+                        # print(11111)
                         q.put_nowait(raw)
                 except Exception:
                     pass
@@ -296,6 +296,9 @@ class SimpleSwitchTest(BfRuntimeTest):
                     continue
 
                 # datagram = _safe_parse_and_build(agent, raw)
+                global pkt_count 
+                pkt_count = pkt_count+1
+                print("receive packet: ",pkt_count)
                 mirror = Mirror(raw[MIRRORING_METADATA_OFFSET:MIRRORING_METADATA_OFFSET+MIRRORING_METADATA_LENGTH])
                 print("total packet: ",mirror.total_packets)
                 ethernet = Ether(raw[ETHERNET_HEADER_OFFSET:ETHERNET_HEADER_OFFSET+ETHERNET_HEADER_LENGTH])
