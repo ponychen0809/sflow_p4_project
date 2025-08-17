@@ -282,7 +282,7 @@ class SimpleSwitchTest(BfRuntimeTest):
 
             # 這裡用小 timeout 的 while-loop，以便可中斷
             while not stop_evt.is_set():
-                print("=========")
+                print("producer start")
                 sniff(iface="enp6s0", prn=_enqueue)
 
         # --- 2) worker thread：從 FIFO 取封包，解析並送出 sFlow datagram ---
