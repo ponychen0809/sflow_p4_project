@@ -1,6 +1,5 @@
 #!/bin/bash
-# 每 0.5 秒取樣一次，共 50 次；每次即時印出各核心使用率，最後印平均（整數 %）
-# 若要浮點小數我也可以再改成小數點兩位
+# 每 0.5 秒取樣一次，共 50 次；即時印出各核心使用率，最後印每核心平均與總平均
 
 LC_ALL=C
 
@@ -8,12 +7,10 @@ declare -A prev_idle prev_total
 declare -A sum count
 
 print_and_accumulate() {
-  # 逐行讀 /proc/stat，遇到 cpu/cpu0/cpu1... 就當場算、印、累加
   while read -r tag user nice system idle iowait irq softirq steal rest; do
     [[ "$tag" =~ ^cpu ]] || break
     total=$((user + nice + system + idle + iowait + irq + softirq + steal))
 
-    # 前一刻
     pi=${prev_idle[$tag]:-}
     pt=${prev_total[$tag]:-}
 
@@ -21,7 +18,6 @@ print_and_accumulate() {
       di=$(( idle  - pi ))
       dt=$(( total - pt ))
       if (( dt > 0 )); then
-        # 使用率 = 100 * (1 - di/dt) ；四捨五入成整數 %
         usage=$(( (100 * (dt - di) + dt/2) / dt ))
         printf "%-5s 使用率: %3d%%\n" "$tag" "$usage"
         sum[$tag]=$(( ${sum[$tag]:-0} + usage ))
@@ -29,7 +25,6 @@ print_and_accumulate() {
       fi
     fi
 
-    # 更新前一刻
     prev_idle[$tag]=$idle
     prev_total[$tag]=$total
   done < /proc/stat
@@ -38,7 +33,6 @@ print_and_accumulate() {
 echo "開始紀錄 CPU 使用率 (每 0.5 秒一次，共 50 次)..."
 echo
 
-# 先讀一次作為基準
 print_and_accumulate >/dev/null
 
 for i in $(seq 1 50); do
@@ -51,8 +45,22 @@ echo
 echo "=========================="
 echo " 每個核心平均 CPU 使用率 "
 echo "=========================="
-# 依名稱排序，先 cpu（總和），再 cpu0、cpu1...
+
+overall_sum=0
+core_count=0
+
 for k in $(printf "%s\n" "${!sum[@]}" | sort -V); do
   avg=$(( sum[$k] / count[$k] ))
   printf "%-5s 平均使用率: %3d%%\n" "$k" "$avg"
+  # 只算 cpu0、cpu1…，不包含總 cpu
+  if [[ "$k" =~ ^cpu[0-9]+$ ]]; then
+    overall_sum=$(( overall_sum + avg ))
+    core_count=$(( core_count + 1 ))
+  fi
 done
+
+if (( core_count > 0 )); then
+  overall_avg=$(( overall_sum / core_count ))
+  echo "--------------------------"
+  printf "所有核心總平均使用率: %3d%%\n" "$overall_avg"
+fi
