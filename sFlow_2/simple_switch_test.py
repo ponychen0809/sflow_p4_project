@@ -295,6 +295,7 @@ class SimpleSwitchTest(BfRuntimeTest):
 
         # --- 2) worker thread：從 FIFO 取封包，解析並送出 sFlow datagram ---
         def _consumer():
+            print(threading.current_thread().name)
             while not stop_evt.is_set() or not q.empty():
                 try:
                     raw = q.get(timeout=0.5)
@@ -332,11 +333,17 @@ class SimpleSwitchTest(BfRuntimeTest):
                 q.task_done()
 
         producer = threading.Thread(target=_producer, name="sniff-producer", daemon=True)
-        consumer = threading.Thread(target=_consumer, name="sflow-consumer", daemon=True)
+        # consumer = threading.Thread(target=_consumer, name="sflow-consumer", daemon=True)
+        consumers = []
+        for i in range(num_consumers):                          # ★ 啟動多個 consumer
+            t = threading.Thread(target=_consumer, name=f"sflow-consumer-{i}", daemon=True)
+            t.start()
+            consumers.append(t)
 
+        producer.start()
         # 啟動
         producer.start()
-        consumer.start()
+        # consumer.start()
 
         # 若有 timeout，就等到時間到再收束；否則 Ctrl+C 可中斷
         try:
