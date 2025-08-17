@@ -1,59 +1,60 @@
 #!/bin/bash
+# 0.5 秒取樣一次，共 50 次；每次即時印出各核心使用率，最後印平均
 
-declare -A sum count prev_idle prev_total
+declare -A prev_idle prev_total
+declare -A sum count
+
+read_stat() {
+  # 讀取 /proc/stat 中所有 cpu/cpu0/cpu1... 的 idle 和 total
+  while read -r tag user nice system idle iowait irq softirq steal rest; do
+    [[ "$tag" =~ ^cpu ]] || break
+    total=$((user + nice + system + idle + iowait + irq + softirq + steal))
+    CUR_IDLE[$tag]=$idle
+    CUR_TOTAL[$tag]=$total
+  done < /proc/stat
+}
 
 echo "開始紀錄 CPU 使用率 (每 0.5 秒一次，共 50 次)..."
 echo
 
-# 取 CPU 狀態
-get_cpu_usage() {
-    while read -r line; do
-        [[ "$line" =~ ^cpu ]] || break
-        cpu=($line)
-        core=${cpu[0]}         # CPU 名稱 (cpu, cpu0, cpu1...)
-        user=${cpu[1]}
-        nice=${cpu[2]}
-        system=${cpu[3]}
-        idle=${cpu[4]}
-        iowait=${cpu[5]}
-        irq=${cpu[6]}
-        softirq=${cpu[7]}
-        steal=${cpu[8]}
-        total=$((user+nice+system+idle+iowait+irq+softirq+steal))
+# 先讀一次做為前一刻
+read_stat
+for core in "${!CUR_IDLE[@]}"; do
+  prev_idle[$core]=${CUR_IDLE[$core]}
+  prev_total[$core]=${CUR_TOTAL[$core]}
+done
 
-        prev_i=${prev_idle[$core]:-0}
-        prev_t=${prev_total[$core]:-0}
-
-        diff_idle=$((idle - prev_i))
-        diff_total=$((total - prev_t))
-        usage=$((100 * (diff_total - diff_idle) / diff_total))
-
-        if [ $prev_t -ne 0 ]; then
-            echo "$core $usage"
-        fi
-
-        prev_idle[$core]=$idle
-        prev_total[$core]=$total
-    done < /proc/stat
-}
-
-# 50 次，每次間隔 0.5 秒
+# 取樣 50 次
 for i in $(seq 1 50); do
-    echo "---- 第 $i 次 ----"
-    get_cpu_usage | while read core usage; do
-        sum[$core]=$((${sum[$core]:-0} + usage))
-        count[$core]=$((${count[$core]:-0} + 1))
-        printf "%-5s 使用率: %3d%%\n" "$core" "$usage"
-    done
-    sleep 0.5
+  sleep 0.5
+
+  # 讀現在的數值
+  read_stat
+
+  echo "---- 第 $i 次 ----"
+  for core in "${!CUR_IDLE[@]}"; do
+    di=$(( CUR_IDLE[$core]  - prev_idle[$core]  ))
+    dt=$(( CUR_TOTAL[$core] - prev_total[$core] ))
+    if (( dt > 0 )); then
+      # 使用率(%) = 100 * (1 - di/dt)
+      # 為了整數運算，四捨五入到整數百分比
+      usage=$(( (100 * (dt - di) + dt/2) / dt ))
+      printf "%-5s 使用率: %3d%%\n" "$core" "$usage"
+
+      sum[$core]=$(( ${sum[$core]:-0} + usage ))
+      count[$core]=$(( ${count[$core]:-0} + 1 ))
+    fi
+    # 更新前一刻
+    prev_idle[$core]=${CUR_IDLE[$core]}
+    prev_total[$core]=${CUR_TOTAL[$core]}
+  done
 done
 
 echo
 echo "=========================="
 echo " 每個核心平均 CPU 使用率 "
 echo "=========================="
-
 for core in "${!sum[@]}"; do
-    avg=$((sum[$core] / count[$core]))
-    printf "%-5s 平均使用率: %3d%%\n" "$core" "$avg"
+  avg=$(( sum[$core] / count[$core] ))
+  printf "%-5s 平均使用率: %3d%%\n" "$core" "$avg"
 done | sort
