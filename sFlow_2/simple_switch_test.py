@@ -280,6 +280,7 @@ class SimpleSwitchTest(BfRuntimeTest):
                         # print(11111)
                         raw = bytes(pkt)
                         q.put_nowait(raw)
+                        print(q.qsize())
                 except Exception:
                     pass
 
@@ -323,12 +324,7 @@ class SimpleSwitchTest(BfRuntimeTest):
                     udp_datagram = agent.processSamples(ip_layer=ip, layer4=udp, ingress_port=mirror.ingress_port, egress_port=mirror.egress_port, total_packets=mirror.total_packets)
                     if udp_datagram:
                         send_packet(self, 320, udp_datagram) 
-                # if datagram:
-                #     try:
-                #         # 從 PTF port（邏輯埠號）送出到 collector 所在介面
-                #         send_packet(self, ptf_tx_port, datagram)
-                #     except Exception:
-                #         pass
+               
                 q.task_done()
 
         producer = threading.Thread(target=_producer, name="sniff-producer", daemon=True)
