@@ -271,7 +271,7 @@ class SimpleSwitchTest(BfRuntimeTest):
         # --- 1) sniff thread：只負責把封包轉成 bytes 丟進 FIFO ---
         def _producer():
             def _enqueue(pkt):
-                
+                print("123123123")
                 try:
                     raw = bytes(pkt)
                     if len(raw) >= 50:
