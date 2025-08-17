@@ -343,7 +343,7 @@ class SimpleSwitchTest(BfRuntimeTest):
 
         producer.start()
         # 啟動
-        producer.start()
+        # producer.start()
         # consumer.start()
 
         # 若有 timeout，就等到時間到再收束；否則 Ctrl+C 可中斷
