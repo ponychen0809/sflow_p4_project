@@ -289,7 +289,7 @@ class SimpleSwitchTest(BfRuntimeTest):
                     pass
 
             while not stop_evt.is_set():
-                sniff(iface="enp6s0", prn=_enqueue)
+                sniff(iface="enp6s0", store=False,prn=_enqueue)
 
         # --- 2) worker thread：從 FIFO 取封包，解析並送出 sFlow datagram ---
         def _consumer():
