@@ -335,7 +335,7 @@ class SimpleSwitchTest(BfRuntimeTest):
         producer = threading.Thread(target=_producer, name="sniff-producer", daemon=True)
         # consumer = threading.Thread(target=_consumer, name="sflow-consumer", daemon=True)
         consumers = []
-        for i in range(num_consumers):                          # ★ 啟動多個 consumer
+        for i in range(2):                          # ★ 啟動多個 consumer
             t = threading.Thread(target=_consumer, name=f"sflow-consumer-{i}", daemon=True)
             t.start()
             consumers.append(t)
