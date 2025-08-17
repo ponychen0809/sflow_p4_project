@@ -212,7 +212,51 @@ class SimpleSwitchTest(BfRuntimeTest):
 
         self.handlePackets()
     
-    def handlePackets(self):
+    def _safe_parse_and_build(agent, raw_bytes):
+
+        # 最小長度：Mirror(8) + Ether(14) + IPv4(min 20) + UDP(min 8) ≈ 50
+        if len(raw_bytes) < 50:
+            return None
+
+        # 解析 Mirror metadata（8 bytes）
+        mirror = Mirror(raw_bytes[0:8])
+
+        # 用 Scapy 解析 L2+（避免手動算 header 長度、也支援 IP/TCP options）
+        try:
+            l2 = Ether(raw_bytes[8:])
+        except Exception:
+            return None
+
+        if l2.type != 0x0800 or not l2.haslayer(IP):
+            return None
+
+        ip = l2[IP]
+
+        # 只處理 TCP/UDP（其他協定略過）
+        l4 = None
+        if ip.proto == 6 and l2.haslayer(TCP):
+            l4 = l2[TCP]
+        elif ip.proto == 17 and l2.haslayer(UDP):
+            l4 = l2[UDP]
+        else:
+            return None
+
+        # 叫你的 sFlowAgent 組 datagram（可能不是每包都回傳）
+        try:
+            return agent.processSamples(
+                ip_layer=ip,
+                layer4=l4,
+                ingress_port=mirror.ingress_port,
+                egress_port=mirror.egress_port,
+                total_packets=mirror.total_packets
+            )
+        except Exception:
+            # 防護：解析/組包出錯就丟棄
+            return None
+
+    def handlePackets(self, iface="enp6s0", ptf_tx_port=320, timeout_sec=None):
+    
+        # 準備 sFlow agent
         agent = sflow.sFlowAgent(
             datagram_version=5,
             address_type=1,
@@ -221,41 +265,95 @@ class SimpleSwitchTest(BfRuntimeTest):
             collector_address="10.10.3.1"
         )
 
-        def handle_pkt(packet):
-            
-            if len(packet) != 56:
-                return
-            global pkt_count 
-            pkt_count = pkt_count+1
-            print("receive packet: ",pkt_count)
-            pkt = bytes(packet)
+        q = Queue(maxsize=4096)        # FIFO
+        stop_evt = threading.Event()
 
-            mirror = Mirror(pkt[MIRRORING_METADATA_OFFSET:MIRRORING_METADATA_OFFSET+MIRRORING_METADATA_LENGTH])
-            print("total packet: ",mirror.total_packets)
-            ethernet = Ether(pkt[ETHERNET_HEADER_OFFSET:ETHERNET_HEADER_OFFSET+ETHERNET_HEADER_LENGTH])
-            
-            if (ethernet.type != TYPE_IPV4):
-                return
-            
-            ip = IP(pkt[IP_HEADER_OFFSET:IP_HEADER_OFFSET+IP_HEADER_LENGTH])
-            
-            if (ip.proto != PROTO_TCP and ip.proto != PROTO_UDP):
-                return
-            
-            if (ip.proto == PROTO_TCP):
-                tcp = TCP(pkt[TCP_HEADER_OFFSET:TCP_HEADER_OFFSET+TCP_HEADER_LENGTH])
+        # --- 1) sniff thread：只負責把封包轉成 bytes 丟進 FIFO ---
+        def _producer():
+            def _enqueue(pkt):
+                
+                try:
+                    raw = bytes(pkt)
+                    if len(raw) >= 50:
+                        print("123123123")
+                        q.put_nowait(raw)
+                except Exception:
+                    pass
 
-                udp_datagram = agent.processSamples(ip_layer=ip, layer4=tcp, ingress_port=mirror.ingress_port, egress_port=mirror.egress_port, total_packets=mirror.total_packets)
-                if udp_datagram:
-                    send_packet(self, 320, udp_datagram)
-            elif (ip.proto == PROTO_UDP):
-                udp = UDP(pkt[UDP_HEADER_OFFSET:UDP_HEADER_OFFSET+UDP_HEADER_LENGTH])
+            # 這裡用小 timeout 的 while-loop，以便可中斷
+            while not stop_evt.is_set():
+                sniff(iface="enp6s0", prn=_enqueue)
 
-                udp_datagram = agent.processSamples(ip_layer=ip, layer4=udp, ingress_port=mirror.ingress_port, egress_port=mirror.egress_port, total_packets=mirror.total_packets)
-                if udp_datagram:
-                    send_packet(self, 320, udp_datagram)       
+        # --- 2) worker thread：從 FIFO 取封包，解析並送出 sFlow datagram ---
+        def _consumer():
+            while not stop_evt.is_set() or not q.empty():
+                
+                try:
+                    raw = q.get(timeout=0.5)
+                except Empty:
+                    continue
 
-        sniff(iface="enp6s0", prn=handle_pkt)
+                global pkt_count 
+                pkt_count = pkt_count+1
+                print("receive packet: ",pkt_count)
+                mirror = Mirror(raw[MIRRORING_METADATA_OFFSET:MIRRORING_METADATA_OFFSET+MIRRORING_METADATA_LENGTH])
+                print("total packet: ",mirror.total_packets)
+                ethernet = Ether(raw[ETHERNET_HEADER_OFFSET:ETHERNET_HEADER_OFFSET+ETHERNET_HEADER_LENGTH])
+                if (ethernet.type != TYPE_IPV4):
+                    continue
+                ip = IP(raw[IP_HEADER_OFFSET:IP_HEADER_OFFSET+IP_HEADER_LENGTH])
+                
+                if (ip.proto != PROTO_TCP and ip.proto != PROTO_UDP):
+                    continue
+                
+                if (ip.proto == PROTO_TCP):
+                    tcp = TCP(raw[TCP_HEADER_OFFSET:TCP_HEADER_OFFSET+TCP_HEADER_LENGTH])
+
+                    udp_datagram = agent.processSamples(ip_layer=ip, layer4=tcp, ingress_port=mirror.ingress_port, egress_port=mirror.egress_port, total_packets=mirror.total_packets)
+                    if udp_datagram:
+                        send_packet(self, 320, udp_datagram)
+                elif (ip.proto == PROTO_UDP):
+                    udp = UDP(raw[UDP_HEADER_OFFSET:UDP_HEADER_OFFSET+UDP_HEADER_LENGTH])
+
+                    udp_datagram = agent.processSamples(ip_layer=ip, layer4=udp, ingress_port=mirror.ingress_port, egress_port=mirror.egress_port, total_packets=mirror.total_packets)
+                    if udp_datagram:
+                        send_packet(self, 320, udp_datagram) 
+                # datagram = _safe_parse_and_build(agent, raw)
+                # if datagram:
+                #     try:
+                #         # 從 PTF port（邏輯埠號）送出到 collector 所在介面
+                #         send_packet(self, ptf_tx_port, datagram)
+                #     except Exception:
+                #         pass
+                q.task_done()
+
+        producer = threading.Thread(target=_producer, name="sniff-producer", daemon=True)
+        consumer = threading.Thread(target=_consumer, name="sflow-consumer", daemon=True)
+
+        # 啟動
+        producer.start()
+        consumer.start()
+
+        # 若有 timeout，就等到時間到再收束；否則 Ctrl+C 可中斷
+        try:
+            if timeout_sec is not None:
+                # 睡到 timeout；你也可以在這段期間做其他測試工作
+                end = time.time() + timeout_sec
+                while time.time() < end and producer.is_alive() and consumer.is_alive():
+                    time.sleep(0.5)
+            else:
+                # 無限期運作到 KeyboardInterrupt
+                while producer.is_alive() and consumer.is_alive():
+                    time.sleep(0.5)
+        except KeyboardInterrupt:
+            pass
+        finally:
+            # 發出停止信號，並等隊列清空
+            stop_evt.set()
+            producer.join(timeout=2.0)
+            # 等等隊列處理完（最多等 3 秒）
+            q.join()
+            consumer.join(timeout=2.0)
     
     def cleanUp(self):
         try:
