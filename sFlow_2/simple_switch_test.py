@@ -266,7 +266,7 @@ class SimpleSwitchTest(BfRuntimeTest):
             collector_address="10.10.3.1"
         )
 
-        q = Queue(maxsize=4096)        # FIFO
+        q = Queue(maxsize=8192)        # FIFO
         stop_evt = threading.Event()
 
         # --- 1) sniff thread：只負責把封包轉成 bytes 丟進 FIFO ---
