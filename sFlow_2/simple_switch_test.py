@@ -280,7 +280,7 @@ class SimpleSwitchTest(BfRuntimeTest):
                         # print(11111)
                         raw = bytes(pkt)
                         q.put_nowait(raw)
-                        print("Queue size: " ,q.qsize())
+                        # print("Queue size: " ,q.qsize())
                 except Exception:
                     pass
 
