@@ -274,10 +274,11 @@ class SimpleSwitchTest(BfRuntimeTest):
             def _enqueue(pkt):
                 try:
                     # 若你的鏡像封包已是 bytes，可直接 bytes(pkt)
-                    raw = bytes(pkt)
+                    
                     # 可加入基本過濾（例如最小長度），降低 worker 壓力
-                    if len(raw) >= 50:
+                    if len(pkt) == 56:
                         # print(11111)
+                        raw = bytes(pkt)
                         q.put_nowait(raw)
                 except Exception:
                     pass
