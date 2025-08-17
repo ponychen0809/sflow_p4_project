@@ -293,6 +293,7 @@ class SimpleSwitchTest(BfRuntimeTest):
                 try:
                     raw = q.get(timeout=0.5)
                 except Empty:
+                    print("Empty")
                     continue
 
                 # datagram = _safe_parse_and_build(agent, raw)
