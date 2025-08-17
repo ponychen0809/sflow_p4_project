@@ -278,10 +278,11 @@ class SimpleSwitchTest(BfRuntimeTest):
                     # 可加入基本過濾（例如最小長度），降低 worker 壓力
                     if len(pkt) == 56:
                         # print(11111)
+                        
+                        raw = bytes(pkt)
                         global write_count
                         write_count = write_count +1
                         print("write_count: " ,write_count)
-                        raw = bytes(pkt)
                         q.put_nowait(raw)
                         print("Queue size: " ,q.qsize())
                 except Exception:
@@ -297,10 +298,8 @@ class SimpleSwitchTest(BfRuntimeTest):
                 try:
                     raw = q.get(timeout=0.5)
                 except Empty:
-                    # print("Empty")
                     continue
 
-                # datagram = _safe_parse_and_build(agent, raw)
                 global pkt_count 
                 pkt_count = pkt_count+1
                 # print(threading.current_thread().name,", receive packet: ",pkt_count)
