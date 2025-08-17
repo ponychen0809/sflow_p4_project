@@ -280,6 +280,7 @@ class SimpleSwitchTest(BfRuntimeTest):
                         # print(11111)
                         
                         raw = bytes(pkt)
+                        print(raw.__len__)
                         global write_count
                         write_count = write_count +1
                         print("write_count: " ,write_count)
