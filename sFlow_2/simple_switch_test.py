@@ -275,7 +275,7 @@ class SimpleSwitchTest(BfRuntimeTest):
                 try:
                     raw = bytes(pkt)
                     if len(raw) >= 50:
-                        print("123123123")
+                        # print("123123123")
                         q.put_nowait(raw)
                 except Exception:
                     pass
