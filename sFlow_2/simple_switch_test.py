@@ -330,15 +330,15 @@ class SimpleSwitchTest(BfRuntimeTest):
                 q.task_done()
 
         producer = threading.Thread(target=_producer, name="sniff-producer", daemon=True)
-        consumer = threading.Thread(target=_consumer, name="sflow-consumer", daemon=True)
-        consumer.start()
+        # consumer = threading.Thread(target=_consumer, name="sflow-consumer", daemon=True)
+        # consumer.start()
 
-        # consumers = []
-        # for i in range(2):
-        #                           # ★ 啟動多個 consumer
-        #     t = threading.Thread(target=_consumer, name="consumer-{}".format(i), daemon=True)
-        #     t.start()
-        #     consumers.append(t)
+        consumers = []
+        for i in range(2):
+                                  # ★ 啟動多個 consumer
+            t = threading.Thread(target=_consumer, name="consumer-{}".format(i), daemon=True)
+            t.start()
+            consumers.append(t)
 
         producer.start()
         # 啟動
@@ -346,41 +346,41 @@ class SimpleSwitchTest(BfRuntimeTest):
         
 
         # 若有 timeout，就等到時間到再收束；否則 Ctrl+C 可中斷
-        try:
-            if timeout_sec is not None:
-                # 睡到 timeout；你也可以在這段期間做其他測試工作
-                end = time.time() + timeout_sec
-                while time.time() < end and producer.is_alive() and consumer.is_alive():
-                    time.sleep(0.5)
-            else:
-                # 無限期運作到 KeyboardInterrupt
-                while producer.is_alive() and consumer.is_alive():
-                    time.sleep(0.5)
-        except KeyboardInterrupt:
-            pass
-        finally:
-            # 發出停止信號，並等隊列清空
-            stop_evt.set()
-            producer.join(timeout=2.0)
-            # 等等隊列處理完（最多等 3 秒）
-            q.join()
-            consumer.join(timeout=2.0)
         # try:
         #     if timeout_sec is not None:
+        #         # 睡到 timeout；你也可以在這段期間做其他測試工作
         #         end = time.time() + timeout_sec
-        #         while time.time() < end and producer.is_alive() and all(t.is_alive() for t in consumers):
+        #         while time.time() < end and producer.is_alive() and consumer.is_alive():
         #             time.sleep(0.5)
         #     else:
-        #         while producer.is_alive() and all(t.is_alive() for t in consumers):
+        #         # 無限期運作到 KeyboardInterrupt
+        #         while producer.is_alive() and consumer.is_alive():
         #             time.sleep(0.5)
         # except KeyboardInterrupt:
         #     pass
         # finally:
+        #     # 發出停止信號，並等隊列清空
         #     stop_evt.set()
         #     producer.join(timeout=2.0)
+        #     # 等等隊列處理完（最多等 3 秒）
         #     q.join()
-        #     for t in consumers:                                 # ★ 等所有 consumer 收尾
-        #         t.join(timeout=2.0)
+        #     consumer.join(timeout=2.0)
+        try:
+            if timeout_sec is not None:
+                end = time.time() + timeout_sec
+                while time.time() < end and producer.is_alive() and all(t.is_alive() for t in consumers):
+                    time.sleep(0.5)
+            else:
+                while producer.is_alive() and all(t.is_alive() for t in consumers):
+                    time.sleep(0.5)
+        except KeyboardInterrupt:
+            pass
+        finally:
+            stop_evt.set()
+            producer.join(timeout=2.0)
+            q.join()
+            for t in consumers:                                 # ★ 等所有 consumer 收尾
+                t.join(timeout=2.0)
     
     def cleanUp(self):
         try:
