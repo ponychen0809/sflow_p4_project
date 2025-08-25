@@ -26,6 +26,9 @@ import struct
 import time
 import sflow
 import threading
+import psutil, os
+
+
 
 MIRRORING_METADATA_OFFSET = 0
 MIRRORING_METADATA_LENGTH = 8
@@ -227,11 +230,20 @@ class SimpleSwitchTest(BfRuntimeTest):
                 return
             global pkt_count 
             pkt_count = pkt_count+1
-            print("receive packet: ",pkt_count)
+            # print("receive packet: ",pkt_count)
             pkt = bytes(packet)
+            print("目前執行緒數量：", threading.active_count())
+            p = psutil.Process(os.getpid())
+            print("OS 看到的執行緒數：", p.num_threads())
+            print("允許的核心：", p.cpu_affinity())  # 哪些核心允許使用
+            if hasattr(os, "sched_getcpu"):
+                print("目前在核心：", os.sched_getcpu())
+            else:
+                print("這個系統不支援 sched_getcpu()")
+            print("CPU 使用率 (%)：", p.cpu_percent(interval=1))  # 1 秒取樣
 
             mirror = Mirror(pkt[MIRRORING_METADATA_OFFSET:MIRRORING_METADATA_OFFSET+MIRRORING_METADATA_LENGTH])
-            print("total packet: ",mirror.total_packets)
+            # print("total packet: ",mirror.total_packets)
             ethernet = Ether(pkt[ETHERNET_HEADER_OFFSET:ETHERNET_HEADER_OFFSET+ETHERNET_HEADER_LENGTH])
             
             if (ethernet.type != TYPE_IPV4):
