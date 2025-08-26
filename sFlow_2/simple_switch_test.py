@@ -261,7 +261,7 @@ class SimpleSwitchTest(BfRuntimeTest):
         def handle_pkt_process(queue, agent, pkt_count):
             while True:
                 if not queue.empty():
-                    if queue.qsize() > 10:
+                    if queue.qsize() > 1000:
                         print("Queue size: ",queue.qsize())
                     packet = queue.get()
                     handle_pkt(packet, agent, None, pkt_count)  # 假設沒有實際的 mirror 參數
@@ -269,7 +269,7 @@ class SimpleSwitchTest(BfRuntimeTest):
                     # 這裡可以進一步處理鏡像的邏輯，根據需要修改
                 # time.sleep(0.1)  # 避免過於頻繁的輪詢
         pkt_count = multiprocessing.Value('i', 0)
-        packet_queue = multiprocessing.Queue(maxsize=1000)
+        packet_queue = multiprocessing.Queue(maxsize=10000)
         sniff_process = multiprocessing.Process(target=sniff_packets, args=(packet_queue,))
         handle_process_1 = multiprocessing.Process(target=handle_pkt_process, args=(packet_queue, agent, pkt_count))
         # handle_process_2 = multiprocessing.Process(target=handle_pkt_process, args=(packet_queue, agent, pkt_count))
