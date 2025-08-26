@@ -221,33 +221,6 @@ class SimpleSwitchTest(BfRuntimeTest):
             sub_agent_id=0,
             collector_address="10.10.3.1"
         )
-        def sniff_packets(queue):
-            sniff(iface="enp6s0", prn=lambda x: queue.put(x), store=0)
-            print("Queue size: ",queue.qsize())
-
-        def handle_pkt_process(queue, agent, pkt_count):
-            while True:
-                if not queue.empty():
-                    packet = queue.get()
-                    handle_pkt(packet, agent, None, pkt_count)  # 假設沒有實際的 mirror 參數
-                    # 這裡可以進一步處理鏡像的邏輯，根據需要修改
-                time.sleep(0.1)  # 避免過於頻繁的輪詢
-        pkt_count = multiprocessing.Value('i', 0)
-        packet_queue = multiprocessing.Queue()
-        sniff_process = multiprocessing.Process(target=sniff_packets, args=(packet_queue,))
-        handle_process_1 = multiprocessing.Process(target=handle_pkt_process, args=(packet_queue, agent, pkt_count))
-        handle_process_2 = multiprocessing.Process(target=handle_pkt_process, args=(packet_queue, agent, pkt_count))
-
-        sniff_process.start()
-        handle_process_1.start()
-        handle_process_2.start()
-
-        sniff_process.join()
-        handle_process_1.join()
-        handle_process_2.join()
-
-        
-        
         def handle_pkt(packet, agent, mirror, pkt_count):
             if len(packet) != 56:
                 return
@@ -282,39 +255,31 @@ class SimpleSwitchTest(BfRuntimeTest):
                 if udp_datagram:
                     send_packet(320, udp_datagram)
 
-        # def handle_pkt(packet):
-            
-        #     if len(packet) != 56:
-        #         return
-            
-        #     pkt = bytes(packet)
+        def sniff_packets(queue):
+            sniff(iface="enp6s0", prn=lambda x: queue.put(x), store=0)
+            print("Queue size: ",queue.qsize())
 
-        #     mirror = Mirror(pkt[MIRRORING_METADATA_OFFSET:MIRRORING_METADATA_OFFSET+MIRRORING_METADATA_LENGTH])
-        #     print("total packet: ",mirror.total_packets)
-        #     ethernet = Ether(pkt[ETHERNET_HEADER_OFFSET:ETHERNET_HEADER_OFFSET+ETHERNET_HEADER_LENGTH])
-            
-        #     if (ethernet.type != TYPE_IPV4):
-        #         return
-            
-        #     ip = IP(pkt[IP_HEADER_OFFSET:IP_HEADER_OFFSET+IP_HEADER_LENGTH])
-            
-        #     if (ip.proto != PROTO_TCP and ip.proto != PROTO_UDP):
-        #         return
-            
-        #     if (ip.proto == PROTO_TCP):
-        #         tcp = TCP(pkt[TCP_HEADER_OFFSET:TCP_HEADER_OFFSET+TCP_HEADER_LENGTH])
+        def handle_pkt_process(queue, agent, pkt_count):
+            while True:
+                if not queue.empty():
+                    packet = queue.get()
+                    handle_pkt(packet, agent, None, pkt_count)  # 假設沒有實際的 mirror 參數
+                    # 這裡可以進一步處理鏡像的邏輯，根據需要修改
+                time.sleep(0.1)  # 避免過於頻繁的輪詢
+        pkt_count = multiprocessing.Value('i', 0)
+        packet_queue = multiprocessing.Queue()
+        sniff_process = multiprocessing.Process(target=sniff_packets, args=(packet_queue,))
+        handle_process_1 = multiprocessing.Process(target=handle_pkt_process, args=(packet_queue, agent, pkt_count))
+        handle_process_2 = multiprocessing.Process(target=handle_pkt_process, args=(packet_queue, agent, pkt_count))
 
-        #         udp_datagram = agent.processSamples(ip_layer=ip, layer4=tcp, ingress_port=mirror.ingress_port, egress_port=mirror.egress_port, total_packets=mirror.total_packets)
-        #         if udp_datagram:
-        #             send_packet(self, 320, udp_datagram)
-        #     elif (ip.proto == PROTO_UDP):
-        #         udp = UDP(pkt[UDP_HEADER_OFFSET:UDP_HEADER_OFFSET+UDP_HEADER_LENGTH])
+        sniff_process.start()
+        handle_process_1.start()
+        handle_process_2.start()
 
-        #         udp_datagram = agent.processSamples(ip_layer=ip, layer4=udp, ingress_port=mirror.ingress_port, egress_port=mirror.egress_port, total_packets=mirror.total_packets)
-        #         if udp_datagram:
-        #             send_packet(self, 320, udp_datagram)       
+        sniff_process.join()
+        handle_process_1.join()
+        handle_process_2.join()
 
-        # sniff(iface="enp6s0", prn=handle_pkt)
     
     def cleanUp(self):
         try:
