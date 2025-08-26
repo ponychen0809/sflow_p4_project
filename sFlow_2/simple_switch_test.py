@@ -225,7 +225,7 @@ class SimpleSwitchTest(BfRuntimeTest):
                 return
             
             pkt_count.value += 1
-            print("Receive packet:", pkt_count.value)
+            # print("Receive packet:", pkt_count.value)
 
             pkt = bytes(packet)
             mirror_pkt = Mirror(pkt[MIRRORING_METADATA_OFFSET:MIRRORING_METADATA_OFFSET + MIRRORING_METADATA_LENGTH])
