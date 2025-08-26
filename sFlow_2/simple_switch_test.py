@@ -229,7 +229,7 @@ class SimpleSwitchTest(BfRuntimeTest):
 
             pkt = bytes(packet)
             mirror_pkt = Mirror(pkt[MIRRORING_METADATA_OFFSET:MIRRORING_METADATA_OFFSET + MIRRORING_METADATA_LENGTH])
-            print(os.getpid(),", Total packet:", mirror_pkt.total_packets)
+            # print(os.getpid(),", Total packet:", mirror_pkt.total_packets)
 
             ethernet = Ether(pkt[ETHERNET_HEADER_OFFSET:ETHERNET_HEADER_OFFSET + ETHERNET_HEADER_LENGTH])
 
