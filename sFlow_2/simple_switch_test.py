@@ -213,7 +213,6 @@ class SimpleSwitchTest(BfRuntimeTest):
         self.handlePackets()
     
     def handlePackets(self):
-        print("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa")
         agent = sflow.sFlowAgent(
             datagram_version=5,
             address_type=1,
@@ -262,7 +261,8 @@ class SimpleSwitchTest(BfRuntimeTest):
         def handle_pkt_process(queue, agent, pkt_count):
             while True:
                 if not queue.empty():
-                    print("Queue size: ",queue.qsize())
+                    if queue.qsize() > 100:
+                        print("Queue size: ",queue.qsize())
                     packet = queue.get()
                     handle_pkt(packet, agent, None, pkt_count)  # 假設沒有實際的 mirror 參數
                     
