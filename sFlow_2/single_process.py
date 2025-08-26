@@ -26,7 +26,7 @@ import struct
 import time
 import sflow
 import threading
-import multiprocessing
+
 MIRRORING_METADATA_OFFSET = 0
 MIRRORING_METADATA_LENGTH = 8
 
@@ -45,7 +45,7 @@ UDP_HEADER_LENGTH = 20
 TYPE_IPV4 = 0x0800
 PROTO_TCP = 6
 PROTO_UDP = 17
-
+pkt_count = 0
 class Mirror(Packet):
     name = "Mirror"
 
@@ -221,98 +221,41 @@ class SimpleSwitchTest(BfRuntimeTest):
             collector_address="10.10.3.1"
         )
 
-        pkt_count = multiprocessing.Value('i', 0)
-        packet_queue = multiprocessing.Queue()
-        sniff_process = multiprocessing.Process(target=sniff_packets, args=(packet_queue,))
-        handle_process_1 = multiprocessing.Process(target=handle_pkt_process, args=(packet_queue, agent, pkt_count))
-        handle_process_2 = multiprocessing.Process(target=handle_pkt_process, args=(packet_queue, agent, pkt_count))
-
-        sniff_process.start()
-        handle_process_1.start()
-        handle_process_2.start()
-
-        sniff_process.join()
-        handle_process_1.join()
-        handle_process_2.join()
-
-        def sniff_packets(queue):
-            sniff(iface="enp6s0", prn=lambda x: queue.put(x), store=0)
-            print(f"Queue size: {queue.qsize()}")
-        def handle_pkt_process(queue, agent, pkt_count):
-            while True:
-                if not queue.empty():
-                    packet = queue.get()
-                    handle_pkt(packet, agent, None, pkt_count)  # 假設沒有實際的 mirror 參數
-                    # 這裡可以進一步處理鏡像的邏輯，根據需要修改
-                time.sleep(0.1)  # 避免過於頻繁的輪詢
-        
-        def handle_pkt(packet, agent, mirror, pkt_count):
+        def handle_pkt(packet):
+            
             if len(packet) != 56:
                 return
-
-            pkt_count.value += 1
-            print("Receive packet:", pkt_count.value)
-
+            global pkt_count 
+            pkt_count = pkt_count+1
+            print("receive packet: ",pkt_count)
             pkt = bytes(packet)
-            mirror_pkt = Mirror(pkt[MIRRORING_METADATA_OFFSET:MIRRORING_METADATA_OFFSET + MIRRORING_METADATA_LENGTH])
-            print("Total packet:", mirror_pkt.total_packets)
 
-            ethernet = Ether(pkt[ETHERNET_HEADER_OFFSET:ETHERNET_HEADER_OFFSET + ETHERNET_HEADER_LENGTH])
-
-            if ethernet.type != TYPE_IPV4:
+            mirror = Mirror(pkt[MIRRORING_METADATA_OFFSET:MIRRORING_METADATA_OFFSET+MIRRORING_METADATA_LENGTH])
+            print("total packet: ",mirror.total_packets)
+            ethernet = Ether(pkt[ETHERNET_HEADER_OFFSET:ETHERNET_HEADER_OFFSET+ETHERNET_HEADER_LENGTH])
+            
+            if (ethernet.type != TYPE_IPV4):
                 return
-
-            ip = IP(pkt[IP_HEADER_OFFSET:IP_HEADER_OFFSET + IP_HEADER_LENGTH])
-
-            if ip.proto != PROTO_TCP and ip.proto != PROTO_UDP:
+            
+            ip = IP(pkt[IP_HEADER_OFFSET:IP_HEADER_OFFSET+IP_HEADER_LENGTH])
+            
+            if (ip.proto != PROTO_TCP and ip.proto != PROTO_UDP):
                 return
+            
+            if (ip.proto == PROTO_TCP):
+                tcp = TCP(pkt[TCP_HEADER_OFFSET:TCP_HEADER_OFFSET+TCP_HEADER_LENGTH])
 
-            if ip.proto == PROTO_TCP:
-                tcp = TCP(pkt[TCP_HEADER_OFFSET:TCP_HEADER_OFFSET + TCP_HEADER_LENGTH])
-                udp_datagram = agent.processSamples(ip_layer=ip, layer4=tcp, ingress_port=mirror_pkt.ingress_port,
-                                                    egress_port=mirror_pkt.egress_port, total_packets=mirror_pkt.total_packets)
+                udp_datagram = agent.processSamples(ip_layer=ip, layer4=tcp, ingress_port=mirror.ingress_port, egress_port=mirror.egress_port, total_packets=mirror.total_packets)
                 if udp_datagram:
-                    send_packet(320, udp_datagram)
-            elif ip.proto == PROTO_UDP:
-                udp = UDP(pkt[UDP_HEADER_OFFSET:UDP_HEADER_OFFSET + UDP_HEADER_LENGTH])
-                udp_datagram = agent.processSamples(ip_layer=ip, layer4=udp, ingress_port=mirror_pkt.ingress_port,
-                                                    egress_port=mirror_pkt.egress_port, total_packets=mirror_pkt.total_packets)
+                    send_packet(self, 320, udp_datagram)
+            elif (ip.proto == PROTO_UDP):
+                udp = UDP(pkt[UDP_HEADER_OFFSET:UDP_HEADER_OFFSET+UDP_HEADER_LENGTH])
+
+                udp_datagram = agent.processSamples(ip_layer=ip, layer4=udp, ingress_port=mirror.ingress_port, egress_port=mirror.egress_port, total_packets=mirror.total_packets)
                 if udp_datagram:
-                    send_packet(320, udp_datagram)
+                    send_packet(self, 320, udp_datagram)       
 
-        # def handle_pkt(packet):
-            
-        #     if len(packet) != 56:
-        #         return
-            
-        #     pkt = bytes(packet)
-
-        #     mirror = Mirror(pkt[MIRRORING_METADATA_OFFSET:MIRRORING_METADATA_OFFSET+MIRRORING_METADATA_LENGTH])
-        #     print("total packet: ",mirror.total_packets)
-        #     ethernet = Ether(pkt[ETHERNET_HEADER_OFFSET:ETHERNET_HEADER_OFFSET+ETHERNET_HEADER_LENGTH])
-            
-        #     if (ethernet.type != TYPE_IPV4):
-        #         return
-            
-        #     ip = IP(pkt[IP_HEADER_OFFSET:IP_HEADER_OFFSET+IP_HEADER_LENGTH])
-            
-        #     if (ip.proto != PROTO_TCP and ip.proto != PROTO_UDP):
-        #         return
-            
-        #     if (ip.proto == PROTO_TCP):
-        #         tcp = TCP(pkt[TCP_HEADER_OFFSET:TCP_HEADER_OFFSET+TCP_HEADER_LENGTH])
-
-        #         udp_datagram = agent.processSamples(ip_layer=ip, layer4=tcp, ingress_port=mirror.ingress_port, egress_port=mirror.egress_port, total_packets=mirror.total_packets)
-        #         if udp_datagram:
-        #             send_packet(self, 320, udp_datagram)
-        #     elif (ip.proto == PROTO_UDP):
-        #         udp = UDP(pkt[UDP_HEADER_OFFSET:UDP_HEADER_OFFSET+UDP_HEADER_LENGTH])
-
-        #         udp_datagram = agent.processSamples(ip_layer=ip, layer4=udp, ingress_port=mirror.ingress_port, egress_port=mirror.egress_port, total_packets=mirror.total_packets)
-        #         if udp_datagram:
-        #             send_packet(self, 320, udp_datagram)       
-
-        # sniff(iface="enp6s0", prn=handle_pkt)
+        sniff(iface="enp6s0", prn=handle_pkt)
     
     def cleanUp(self):
         try:
