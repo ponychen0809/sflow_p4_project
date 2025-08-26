@@ -230,7 +230,7 @@ class SimpleSwitchTest(BfRuntimeTest):
                 return
             global pkt_count 
             pkt_count = pkt_count+1
-            # print("receive packet: ",pkt_count)
+            print("receive packet: ",pkt_count)
             pkt = bytes(packet)
             # print("目前執行緒數量：", threading.active_count())
             p = psutil.Process(os.getpid())
