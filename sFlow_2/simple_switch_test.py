@@ -233,7 +233,7 @@ class SimpleSwitchTest(BfRuntimeTest):
             # print("receive packet: ",pkt_count)
             pkt = bytes(packet)
             # print("目前執行緒數量：", threading.active_count())
-            # p = psutil.Process(os.getpid())
+            p = psutil.Process(os.getpid())
             # print("OS 看到的執行緒數：", p.num_threads())
             print("允許的核心：", p.cpu_affinity())  # 哪些核心允許使用
             print("\n[Python 執行緒列表]")
