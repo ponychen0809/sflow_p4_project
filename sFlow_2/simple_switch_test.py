@@ -256,7 +256,9 @@ class SimpleSwitchTest(BfRuntimeTest):
                     send_packet(self, 320, udp_datagram)   
         def write_queue(packet):
             queue.put(packet,block=False)
-        def sniff_packets(queue):
+            write_count.value +=1 
+            print("wirte count", write_count.value)
+        def sniff_packets(queue,write_count):
             # sniff(iface="enp6s0", prn=lambda x: queue.put(x,block=False), store=0)
             sniff(iface="enp6s0", prn=write_queue, store=0)
             
@@ -271,9 +273,10 @@ class SimpleSwitchTest(BfRuntimeTest):
                     
                     # 這裡可以進一步處理鏡像的邏輯，根據需要修改
                 # time.sleep(0.1)  # 避免過於頻繁的輪詢
+        write_count = multiprocessing.Value('i', 0)
         pkt_count = multiprocessing.Value('i', 0)
         packet_queue = multiprocessing.Queue()
-        sniff_process = multiprocessing.Process(target=sniff_packets, args=(packet_queue,))
+        sniff_process = multiprocessing.Process(target=sniff_packets, args=(packet_queue,write_count))
         handle_process_1 = multiprocessing.Process(target=handle_pkt_process, args=(packet_queue, agent, pkt_count))
         # handle_process_2 = multiprocessing.Process(target=handle_pkt_process, args=(packet_queue, agent, pkt_count))
 
