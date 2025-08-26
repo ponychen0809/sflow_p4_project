@@ -256,7 +256,7 @@ class SimpleSwitchTest(BfRuntimeTest):
                     send_packet(self, 320, udp_datagram)   
 
         def sniff_packets(queue):
-            sniff(iface="enp6s0", prn=lambda x: queue.put(x), store=0)
+            sniff(iface="enp6s0", prn=lambda x: queue.put(x,block=False), store=0)
             
 
         def handle_pkt_process(queue, agent, pkt_count):
