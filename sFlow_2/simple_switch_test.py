@@ -224,6 +224,7 @@ class SimpleSwitchTest(BfRuntimeTest):
             # print("===== handle packet ======")
             if len(packet) != 56:
                 error_count.value += 1
+                print("error_count: ", error_count.value)
                 return
             print("error_count: ", error_count.value)
 
