@@ -232,14 +232,14 @@ class SimpleSwitchTest(BfRuntimeTest):
             pkt_count = pkt_count+1
             # print("receive packet: ",pkt_count)
             pkt = bytes(packet)
-            print("目前執行緒數量：", threading.active_count())
-            p = psutil.Process(os.getpid())
-            print("OS 看到的執行緒數：", p.num_threads())
+            # print("目前執行緒數量：", threading.active_count())
+            # p = psutil.Process(os.getpid())
+            # print("OS 看到的執行緒數：", p.num_threads())
             print("允許的核心：", p.cpu_affinity())  # 哪些核心允許使用
-            if hasattr(os, "sched_getcpu"):
-                print("目前在核心：", os.sched_getcpu())
-            else:
-                print("這個系統不支援 sched_getcpu()")
+            print("\n[Python 執行緒列表]")
+            for t in threading.enumerate():
+                print(f"Thread name={t.name}, ident={t.ident}")
+            print("總執行緒數：", threading.active_count())
             print("CPU 使用率 (%)：", p.cpu_percent(interval=1))  # 1 秒取樣
 
             mirror = Mirror(pkt[MIRRORING_METADATA_OFFSET:MIRRORING_METADATA_OFFSET+MIRRORING_METADATA_LENGTH])
