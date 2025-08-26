@@ -254,9 +254,11 @@ class SimpleSwitchTest(BfRuntimeTest):
                                                     egress_port=mirror_pkt.egress_port, total_packets=mirror_pkt.total_packets)
                 if udp_datagram:
                     send_packet(self, 320, udp_datagram)   
-
+        def write_queue(packet):
+            queue.put(packet,block=False)
         def sniff_packets(queue):
-            sniff(iface="enp6s0", prn=lambda x: queue.put(x,block=False), store=0)
+            # sniff(iface="enp6s0", prn=lambda x: queue.put(x,block=False), store=0)
+            sniff(iface="enp6s0", prn=write_queue, store=0)
             
 
         def handle_pkt_process(queue, agent, pkt_count):
