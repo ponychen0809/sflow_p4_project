@@ -254,13 +254,13 @@ class SimpleSwitchTest(BfRuntimeTest):
                                                     egress_port=mirror_pkt.egress_port, total_packets=mirror_pkt.total_packets)
                 if udp_datagram:
                     send_packet(self, 320, udp_datagram)   
-        def write_queue(packet):
+        def write_queue(packet,queue,write_count):
             queue.put(packet,block=False)
             write_count.value +=1 
             print("wirte count", write_count.value)
         def sniff_packets(queue,write_count):
             # sniff(iface="enp6s0", prn=lambda x: queue.put(x,block=False), store=0)
-            sniff(iface="enp6s0", prn=write_queue, store=0)
+            sniff(iface="enp6s0", prn=lambda packet: write_queue(packet, queue,write_count), store=0)
             
 
         def handle_pkt_process(queue, agent, pkt_count):
