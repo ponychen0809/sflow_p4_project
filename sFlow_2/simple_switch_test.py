@@ -238,7 +238,7 @@ class SimpleSwitchTest(BfRuntimeTest):
             print("允許的核心：", p.cpu_affinity())  # 哪些核心允許使用
             print("\n[Python 執行緒列表]")
             for t in threading.enumerate():
-                print(f"Thread name={t.name}, ident={t.ident}")
+                print("Thread name=",t.name, ", ident=",t.ident)
             print("總執行緒數：", threading.active_count())
             print("CPU 使用率 (%)：", p.cpu_percent(interval=1))  # 1 秒取樣
 
