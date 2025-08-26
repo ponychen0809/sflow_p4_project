@@ -230,17 +230,17 @@ class SimpleSwitchTest(BfRuntimeTest):
                 return
             global pkt_count 
             pkt_count = pkt_count+1
-            print("receive packet: ",pkt_count)
+            print("\nreceive packet: ",pkt_count)
             pkt = bytes(packet)
             # print("目前執行緒數量：", threading.active_count())
             p = psutil.Process(os.getpid())
             # print("OS 看到的執行緒數：", p.num_threads())
             print("允許的核心：", p.cpu_affinity())  # 哪些核心允許使用
-            print("\n[Python 執行緒列表]")
+            print("[Python 執行緒列表]")
             for t in threading.enumerate():
                 print("Thread name=",t.name, ", ident=",t.ident)
             print("總執行緒數：", threading.active_count())
-            # print("CPU 使用率 (%)：", p.cpu_percent(interval=1))  # 1 秒取樣
+            print("CPU 使用率 (%)：", p.cpu_percent())  # 1 秒取樣
 
             mirror = Mirror(pkt[MIRRORING_METADATA_OFFSET:MIRRORING_METADATA_OFFSET+MIRRORING_METADATA_LENGTH])
             # print("total packet: ",mirror.total_packets)
