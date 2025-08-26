@@ -225,11 +225,11 @@ class SimpleSwitchTest(BfRuntimeTest):
                 return
             
             pkt_count.value += 1
-            # print(os.getpid(),", Receive packet:", pkt_count.value)
+            print(os.getpid(),", Receive packet:", pkt_count.value)
 
             pkt = bytes(packet)
             mirror_pkt = Mirror(pkt[MIRRORING_METADATA_OFFSET:MIRRORING_METADATA_OFFSET + MIRRORING_METADATA_LENGTH])
-            # print(os.getpid(),", Total packet:", mirror_pkt.total_packets)
+            print(os.getpid(),", Total packet:", mirror_pkt.total_packets)
 
             ethernet = Ether(pkt[ETHERNET_HEADER_OFFSET:ETHERNET_HEADER_OFFSET + ETHERNET_HEADER_LENGTH])
 
@@ -261,8 +261,8 @@ class SimpleSwitchTest(BfRuntimeTest):
         def handle_pkt_process(queue, agent, pkt_count):
             while True:
                 if not queue.empty():
-                    if queue.qsize() > 10:
-                        print("Queue size: ",queue.qsize())
+                    # if queue.qsize() > 10:
+                    #     print("Queue size: ",queue.qsize())
                     packet = queue.get()
                     handle_pkt(packet, agent, None, pkt_count)  # 假設沒有實際的 mirror 參數
                     
