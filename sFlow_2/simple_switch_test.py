@@ -220,7 +220,8 @@ class SimpleSwitchTest(BfRuntimeTest):
             sub_agent_id=0,
             collector_address="10.10.3.1"
         )
-        def handle_pkt(packet, agent, mirror, pkt_count,error_count):
+        def handle_pkt(packet, agent, mirror, pkt_count,error_count,write_count):
+            print("wirte count", write_count.value)
             # print("===== handle packet ======")
             if len(packet) != 56:
                 error_count.value += 1
@@ -260,19 +261,19 @@ class SimpleSwitchTest(BfRuntimeTest):
         def write_queue(packet,queue,write_count):
             queue.put(packet,block=False)
             write_count.value +=1 
-            print("wirte count", write_count.value)
+            # print("wirte count", write_count.value)
         def sniff_packets(queue,write_count):
             # sniff(iface="enp6s0", prn=lambda x: queue.put(x,block=False), store=0)
             sniff(iface="enp6s0", prn=lambda packet: write_queue(packet, queue,write_count), store=0)
             
 
-        def handle_pkt_process(queue, agent, pkt_count,error_count):
+        def handle_pkt_process(queue, agent, pkt_count,error_count,write_count):
             while True:
                 if not queue.empty():
                     
                     # print("Queue size: ",queue.qsize())
                     packet = queue.get()
-                    handle_pkt(packet, agent, None, pkt_count,error_count)  # 假設沒有實際的 mirror 參數
+                    handle_pkt(packet, agent, None, pkt_count,error_count,write_count)  # 假設沒有實際的 mirror 參數
                     
                     # 這裡可以進一步處理鏡像的邏輯，根據需要修改
                 # time.sleep(0.1)  # 避免過於頻繁的輪詢
@@ -281,7 +282,7 @@ class SimpleSwitchTest(BfRuntimeTest):
         pkt_count = multiprocessing.Value('i', 0)
         packet_queue = multiprocessing.Queue()
         sniff_process = multiprocessing.Process(target=sniff_packets, args=(packet_queue,write_count))
-        handle_process_1 = multiprocessing.Process(target=handle_pkt_process, args=(packet_queue, agent, pkt_count,error_count))
+        handle_process_1 = multiprocessing.Process(target=handle_pkt_process, args=(packet_queue, agent, pkt_count,error_count,write_count))
         # handle_process_2 = multiprocessing.Process(target=handle_pkt_process, args=(packet_queue, agent, pkt_count))
 
         sniff_process.start()
