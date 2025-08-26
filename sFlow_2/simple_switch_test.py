@@ -221,14 +221,14 @@ class SimpleSwitchTest(BfRuntimeTest):
             collector_address="10.10.3.1"
         )
         def handle_pkt(packet, agent, mirror, pkt_count,error_count,write_count):
-            print("\nwirte count", write_count.value)
+            # print("\nwirte count", write_count.value)
             # print("===== handle packet ======")
             if len(packet) != 56:
                 error_count.value += 1
-                print("error_count: ", error_count.value)
+                # print("error_count: ", error_count.value)
                 return
-            print("error_count: ", error_count.value)
-
+            # print("error_count: ", error_count.value)
+            print("\nwirte count", write_count.value)
             pkt_count.value += 1
             print("Receive packet: ", pkt_count.value)
 
