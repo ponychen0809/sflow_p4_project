@@ -223,7 +223,6 @@ class SimpleSwitchTest(BfRuntimeTest):
         def handle_pkt(packet, agent, mirror, pkt_count):
             print("===== handle packet ======")
             if len(packet) != 56:
-                print("[ERROR] len != 56")
                 return
             
             pkt_count.value += 1
@@ -263,8 +262,8 @@ class SimpleSwitchTest(BfRuntimeTest):
         def handle_pkt_process(queue, agent, pkt_count):
             while True:
                 if not queue.empty():
-                    if queue.qsize() > 1000:
-                        print("Queue size: ",queue.qsize())
+                    
+                    print("Queue size: ",queue.qsize())
                     packet = queue.get()
                     handle_pkt(packet, agent, None, pkt_count)  # 假設沒有實際的 mirror 參數
                     
