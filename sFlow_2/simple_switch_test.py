@@ -223,7 +223,7 @@ class SimpleSwitchTest(BfRuntimeTest):
         def handle_pkt(packet, agent, mirror, pkt_count):
             print("===== handle packet ======")
             if len(packet) != 56:
-                # print("======================================================================================")
+                print("[ERROR] len != 56")
                 return
             
             pkt_count.value += 1
