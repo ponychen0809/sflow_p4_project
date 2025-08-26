@@ -234,13 +234,14 @@ class SimpleSwitchTest(BfRuntimeTest):
             pkt = bytes(packet)
             # print("目前執行緒數量：", threading.active_count())
             p = psutil.Process(os.getpid())
+            print("pid = ",os.getpid())
             # print("OS 看到的執行緒數：", p.num_threads())
             print("允許的核心：", p.cpu_affinity())  # 哪些核心允許使用
             print("[Python 執行緒列表]")
             for t in threading.enumerate():
                 print("Thread name=",t.name, ", ident=",t.ident)
             print("總執行緒數：", threading.active_count())
-            print("CPU 使用率 (%)：", p.cpu_percent())  # 1 秒取樣
+            # print("CPU 使用率 (%)：", p.cpu_percent(interval=1))  # 1 秒取樣
 
             mirror = Mirror(pkt[MIRRORING_METADATA_OFFSET:MIRRORING_METADATA_OFFSET+MIRRORING_METADATA_LENGTH])
             # print("total packet: ",mirror.total_packets)
