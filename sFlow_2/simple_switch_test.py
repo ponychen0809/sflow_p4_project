@@ -213,6 +213,7 @@ class SimpleSwitchTest(BfRuntimeTest):
         self.handlePackets()
     
     def handlePackets(self):
+        print("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa")
         agent = sflow.sFlowAgent(
             datagram_version=5,
             address_type=1,
