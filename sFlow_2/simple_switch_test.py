@@ -237,7 +237,8 @@ class SimpleSwitchTest(BfRuntimeTest):
 
         def sniff_packets(queue):
             sniff(iface="enp6s0", prn=lambda x: queue.put(x), store=0)
-            print(f"Queue size: {queue.qsize()}")
+            print("Queue size: ",queue.qsize())
+
         def handle_pkt_process(queue, agent, pkt_count):
             while True:
                 if not queue.empty():
