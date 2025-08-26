@@ -221,7 +221,17 @@ class SimpleSwitchTest(BfRuntimeTest):
             sub_agent_id=0,
             collector_address="10.10.3.1"
         )
+        def sniff_packets(queue):
+            sniff(iface="enp6s0", prn=lambda x: queue.put(x), store=0)
+            print("Queue size: ",queue.qsize())
 
+        def handle_pkt_process(queue, agent, pkt_count):
+            while True:
+                if not queue.empty():
+                    packet = queue.get()
+                    handle_pkt(packet, agent, None, pkt_count)  # 假設沒有實際的 mirror 參數
+                    # 這裡可以進一步處理鏡像的邏輯，根據需要修改
+                time.sleep(0.1)  # 避免過於頻繁的輪詢
         pkt_count = multiprocessing.Value('i', 0)
         packet_queue = multiprocessing.Queue()
         sniff_process = multiprocessing.Process(target=sniff_packets, args=(packet_queue,))
@@ -236,17 +246,7 @@ class SimpleSwitchTest(BfRuntimeTest):
         handle_process_1.join()
         handle_process_2.join()
 
-        def sniff_packets(queue):
-            sniff(iface="enp6s0", prn=lambda x: queue.put(x), store=0)
-            print("Queue size: ",queue.qsize())
-
-        def handle_pkt_process(queue, agent, pkt_count):
-            while True:
-                if not queue.empty():
-                    packet = queue.get()
-                    handle_pkt(packet, agent, None, pkt_count)  # 假設沒有實際的 mirror 參數
-                    # 這裡可以進一步處理鏡像的邏輯，根據需要修改
-                time.sleep(0.1)  # 避免過於頻繁的輪詢
+        
         
         def handle_pkt(packet, agent, mirror, pkt_count):
             if len(packet) != 56:
