@@ -272,15 +272,15 @@ class SimpleSwitchTest(BfRuntimeTest):
         packet_queue = multiprocessing.Queue()
         sniff_process = multiprocessing.Process(target=sniff_packets, args=(packet_queue,))
         handle_process_1 = multiprocessing.Process(target=handle_pkt_process, args=(packet_queue, agent, pkt_count))
-        handle_process_2 = multiprocessing.Process(target=handle_pkt_process, args=(packet_queue, agent, pkt_count))
+        # handle_process_2 = multiprocessing.Process(target=handle_pkt_process, args=(packet_queue, agent, pkt_count))
 
         sniff_process.start()
         handle_process_1.start()
-        handle_process_2.start()
+        # handle_process_2.start()
 
         sniff_process.join()
         handle_process_1.join()
-        handle_process_2.join()
+        # handle_process_2.join()
 
     
     def cleanUp(self):
