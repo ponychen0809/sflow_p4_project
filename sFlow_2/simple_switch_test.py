@@ -240,7 +240,7 @@ class SimpleSwitchTest(BfRuntimeTest):
             for t in threading.enumerate():
                 print("Thread name=",t.name, ", ident=",t.ident)
             print("總執行緒數：", threading.active_count())
-            print("CPU 使用率 (%)：", p.cpu_percent(interval=1))  # 1 秒取樣
+            # print("CPU 使用率 (%)：", p.cpu_percent(interval=1))  # 1 秒取樣
 
             mirror = Mirror(pkt[MIRRORING_METADATA_OFFSET:MIRRORING_METADATA_OFFSET+MIRRORING_METADATA_LENGTH])
             # print("total packet: ",mirror.total_packets)
