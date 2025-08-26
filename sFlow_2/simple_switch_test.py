@@ -221,6 +221,7 @@ class SimpleSwitchTest(BfRuntimeTest):
             collector_address="10.10.3.1"
         )
         def handle_pkt(packet, agent, mirror, pkt_count):
+            print("===== handle packet ======")
             if len(packet) != 56:
                 # print("======================================================================================")
                 return
@@ -230,7 +231,7 @@ class SimpleSwitchTest(BfRuntimeTest):
 
             pkt = bytes(packet)
             mirror_pkt = Mirror(pkt[MIRRORING_METADATA_OFFSET:MIRRORING_METADATA_OFFSET + MIRRORING_METADATA_LENGTH])
-            print(os.getpid(),", Total packet:", mirror_pkt.total_packets)
+            print("Total packet:", mirror_pkt.total_packets)
 
             ethernet = Ether(pkt[ETHERNET_HEADER_OFFSET:ETHERNET_HEADER_OFFSET + ETHERNET_HEADER_LENGTH])
 
