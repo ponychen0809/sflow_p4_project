@@ -247,13 +247,13 @@ class SimpleSwitchTest(BfRuntimeTest):
                 udp_datagram = agent.processSamples(ip_layer=ip, layer4=tcp, ingress_port=mirror_pkt.ingress_port,
                                                     egress_port=mirror_pkt.egress_port, total_packets=mirror_pkt.total_packets)
                 if udp_datagram:
-                    send_packet(320, udp_datagram)
+                    send_packet(self, 320, udp_datagram)   
             elif ip.proto == PROTO_UDP:
                 udp = UDP(pkt[UDP_HEADER_OFFSET:UDP_HEADER_OFFSET + UDP_HEADER_LENGTH])
                 udp_datagram = agent.processSamples(ip_layer=ip, layer4=udp, ingress_port=mirror_pkt.ingress_port,
                                                     egress_port=mirror_pkt.egress_port, total_packets=mirror_pkt.total_packets)
                 if udp_datagram:
-                    send_packet(320, udp_datagram)
+                    send_packet(self, 320, udp_datagram)   
 
         def sniff_packets(queue):
             sniff(iface="enp6s0", prn=lambda x: queue.put(x), store=0)
