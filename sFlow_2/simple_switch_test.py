@@ -228,13 +228,13 @@ class SimpleSwitchTest(BfRuntimeTest):
                 # print("error_count: ", error_count.value)
                 return
             # print("error_count: ", error_count.value)
-            print("\nwirte count", write_count.value)
+            print("\n",os.getpid(),", wirte count", write_count.value)
             pkt_count.value += 1
-            print("Receive packet: ", pkt_count.value)
+            print(os.getpid(),", Receive packet: ", pkt_count.value)
 
             pkt = bytes(packet)
             mirror_pkt = Mirror(pkt[MIRRORING_METADATA_OFFSET:MIRRORING_METADATA_OFFSET + MIRRORING_METADATA_LENGTH])
-            print("Total packet: ", mirror_pkt.total_packets)
+            print(os.getpid(),", Total packet: ", mirror_pkt.total_packets)
 
             ethernet = Ether(pkt[ETHERNET_HEADER_OFFSET:ETHERNET_HEADER_OFFSET + ETHERNET_HEADER_LENGTH])
 
@@ -284,15 +284,15 @@ class SimpleSwitchTest(BfRuntimeTest):
         packet_queue = multiprocessing.Queue()
         sniff_process = multiprocessing.Process(target=sniff_packets, args=(packet_queue,write_count))
         handle_process_1 = multiprocessing.Process(target=handle_pkt_process, args=(packet_queue, agent, pkt_count,error_count,write_count))
-        # handle_process_2 = multiprocessing.Process(target=handle_pkt_process, args=(packet_queue, agent, pkt_count))
+        handle_process_2 = multiprocessing.Process(target=handle_pkt_process, args=(packet_queue, agent, pkt_count))
 
         sniff_process.start()
         handle_process_1.start()
-        # handle_process_2.start()
+        handle_process_2.start()
 
         sniff_process.join()
         handle_process_1.join()
-        # handle_process_2.join()
+        handle_process_2.join()
 
     
     def cleanUp(self):
