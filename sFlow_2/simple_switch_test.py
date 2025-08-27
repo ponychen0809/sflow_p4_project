@@ -26,7 +26,7 @@ import struct
 import time
 import sflow
 import threading
-
+import multiprocessing
 MIRRORING_METADATA_OFFSET = 0
 MIRRORING_METADATA_LENGTH = 8
 
@@ -45,7 +45,7 @@ UDP_HEADER_LENGTH = 20
 TYPE_IPV4 = 0x0800
 PROTO_TCP = 6
 PROTO_UDP = 17
-pkt_count = 0
+
 class Mirror(Packet):
     name = "Mirror"
 
@@ -220,42 +220,84 @@ class SimpleSwitchTest(BfRuntimeTest):
             sub_agent_id=0,
             collector_address="10.10.3.1"
         )
-
-        def handle_pkt(packet):
-            
+        def handle_pkt(packet, agent, mirror, pkt_count,error_count,write_count,queue_max,queue):
+            # print("\nwirte count", write_count.value)
+            # print("===== handle packet ======")
             if len(packet) != 56:
+                error_count.value += 1
+                # print("error_count: ", error_count.value)
                 return
-            global pkt_count 
-            pkt_count = pkt_count+1
-            print("receive packet: ",pkt_count)
+            # print("error_count: ", error_count.value)
+            print("\nqueue max: ", queue_max.value)
+            print("\nqueue size: ", queue.qsize())
+            print("wirte count", write_count.value)
+            pkt_count.value += 1
+            print("Receive packet: ", pkt_count.value)
+
             pkt = bytes(packet)
+            mirror_pkt = Mirror(pkt[MIRRORING_METADATA_OFFSET:MIRRORING_METADATA_OFFSET + MIRRORING_METADATA_LENGTH])
+            print("Total packet: ", mirror_pkt.total_packets)
 
-            mirror = Mirror(pkt[MIRRORING_METADATA_OFFSET:MIRRORING_METADATA_OFFSET+MIRRORING_METADATA_LENGTH])
-            print("total packet: ",mirror.total_packets)
-            ethernet = Ether(pkt[ETHERNET_HEADER_OFFSET:ETHERNET_HEADER_OFFSET+ETHERNET_HEADER_LENGTH])
-            
-            if (ethernet.type != TYPE_IPV4):
+            ethernet = Ether(pkt[ETHERNET_HEADER_OFFSET:ETHERNET_HEADER_OFFSET + ETHERNET_HEADER_LENGTH])
+
+            if ethernet.type != TYPE_IPV4:
                 return
-            
-            ip = IP(pkt[IP_HEADER_OFFSET:IP_HEADER_OFFSET+IP_HEADER_LENGTH])
-            
-            if (ip.proto != PROTO_TCP and ip.proto != PROTO_UDP):
+
+            ip = IP(pkt[IP_HEADER_OFFSET:IP_HEADER_OFFSET + IP_HEADER_LENGTH])
+
+            if ip.proto != PROTO_TCP and ip.proto != PROTO_UDP:
                 return
+
+            if ip.proto == PROTO_TCP:
+                tcp = TCP(pkt[TCP_HEADER_OFFSET:TCP_HEADER_OFFSET + TCP_HEADER_LENGTH])
+                udp_datagram = agent.processSamples(ip_layer=ip, layer4=tcp, ingress_port=mirror_pkt.ingress_port,
+                                                    egress_port=mirror_pkt.egress_port, total_packets=mirror_pkt.total_packets)
+                if udp_datagram:
+                    send_packet(self, 320, udp_datagram)   
+            elif ip.proto == PROTO_UDP:
+                udp = UDP(pkt[UDP_HEADER_OFFSET:UDP_HEADER_OFFSET + UDP_HEADER_LENGTH])
+                udp_datagram = agent.processSamples(ip_layer=ip, layer4=udp, ingress_port=mirror_pkt.ingress_port,
+                                                    egress_port=mirror_pkt.egress_port, total_packets=mirror_pkt.total_packets)
+                if udp_datagram:
+                    send_packet(self, 320, udp_datagram)   
+        def write_queue(packet,queue,write_count,queue_max):
+            queue.put(packet,block=False)
+            write_count.value +=1 
+            # print("wirte count", write_count.value)
+        def sniff_packets(queue,write_count,queue_max):
+            # sniff(iface="enp6s0", prn=lambda x: queue.put(x,block=False), store=0)
+            sniff(iface="enp6s0", prn=lambda packet: write_queue(packet, queue,write_count,queue_max), store=0)
             
-            if (ip.proto == PROTO_TCP):
-                tcp = TCP(pkt[TCP_HEADER_OFFSET:TCP_HEADER_OFFSET+TCP_HEADER_LENGTH])
 
-                udp_datagram = agent.processSamples(ip_layer=ip, layer4=tcp, ingress_port=mirror.ingress_port, egress_port=mirror.egress_port, total_packets=mirror.total_packets)
-                if udp_datagram:
-                    send_packet(self, 320, udp_datagram)
-            elif (ip.proto == PROTO_UDP):
-                udp = UDP(pkt[UDP_HEADER_OFFSET:UDP_HEADER_OFFSET+UDP_HEADER_LENGTH])
+        def handle_pkt_process(queue, agent, pkt_count,error_count,write_count,queue_max):
+            while True:
+                if not queue.empty():
+                    if queue.qsize() > queue_max.value:
+                        queue_max.value = queue.qsize()
+                    # print("queue max: ",queue_max.value)
+                    packet = queue.get()
+                    handle_pkt(packet, agent, None, pkt_count,error_count,write_count,queue_max,queue)  # 假設沒有實際的 mirror 參數
+                    
+                    # 這裡可以進一步處理鏡像的邏輯，根據需要修改
+                else:
+                    time.sleep(0.1)  # 避免過於頻繁的輪詢
+        write_count = multiprocessing.Value('i', 0)
+        error_count = multiprocessing.Value('i', 0)
+        queue_max = multiprocessing.Value('i', 0)
+        pkt_count = multiprocessing.Value('i', 0)
+        packet_queue = multiprocessing.Queue()
+        sniff_process = multiprocessing.Process(target=sniff_packets, args=(packet_queue,write_count,queue_max))
+        handle_process_1 = multiprocessing.Process(target=handle_pkt_process, args=(packet_queue, agent, pkt_count,error_count,write_count,queue_max))
+        # handle_process_2 = multiprocessing.Process(target=handle_pkt_process, args=(packet_queue, agent, pkt_count,error_count,write_count,queue_max))
 
-                udp_datagram = agent.processSamples(ip_layer=ip, layer4=udp, ingress_port=mirror.ingress_port, egress_port=mirror.egress_port, total_packets=mirror.total_packets)
-                if udp_datagram:
-                    send_packet(self, 320, udp_datagram)       
+        sniff_process.start()
+        handle_process_1.start()
+        # handle_process_2.start()
 
-        sniff(iface="enp6s0", prn=handle_pkt)
+        sniff_process.join()
+        handle_process_1.join()
+        # handle_process_2.join()
+
     
     def cleanUp(self):
         try:
