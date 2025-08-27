@@ -220,7 +220,7 @@ class SimpleSwitchTest(BfRuntimeTest):
             sub_agent_id=0,
             collector_address="10.10.3.1"
         )
-        def handle_pkt(packet, agent, mirror, pkt_count,error_count,write_count,queue_max):
+        def handle_pkt(packet, agent, mirror, pkt_count,error_count,write_count,queue_max,queue):
             # print("\nwirte count", write_count.value)
             # print("===== handle packet ======")
             if len(packet) != 56:
@@ -276,7 +276,7 @@ class SimpleSwitchTest(BfRuntimeTest):
                         queue_max.value = queue.qsize()
                     # print("queue max: ",queue_max.value)
                     packet = queue.get()
-                    handle_pkt(packet, agent, None, pkt_count,error_count,write_count,queue_max)  # 假設沒有實際的 mirror 參數
+                    handle_pkt(packet, agent, None, pkt_count,error_count,write_count,queue_max,queue)  # 假設沒有實際的 mirror 參數
                     
                     # 這裡可以進一步處理鏡像的邏輯，根據需要修改
                 else:
