@@ -229,6 +229,7 @@ class SimpleSwitchTest(BfRuntimeTest):
                 return
             # print("error_count: ", error_count.value)
             print("\nqueue max: ", queue_max.value)
+            print("\nqueue size: ", queue.qsize())
             print("wirte count", write_count.value)
             pkt_count.value += 1
             print("Receive packet: ", pkt_count.value)
