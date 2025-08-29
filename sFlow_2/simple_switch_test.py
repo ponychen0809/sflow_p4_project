@@ -263,10 +263,11 @@ class SimpleSwitchTest(BfRuntimeTest):
         def write_queue(packet,queue,write_count,queue_max):
             try:
                 queue.put(packet,block=False)
-                print("write ++++++++++++++")
+                # print("write ++++++++++++++")
                 write_count.value +=1 
             except queue_module.Full:
-                print("FULL!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
+                print("[ERROR] queue full !!!!!!!!!!!!!!!")
+                # print("FULL!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
             
             
             
