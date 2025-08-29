@@ -2,7 +2,7 @@
 import ptf
 from ptf.testutils import *
 from scapy.all import *
-
+import queue as queue_module
 ####### PTF modules for BFRuntime Client Library APIs #######
 import grpc
 import bfrt_grpc.bfruntime_pb2 as bfruntime_pb2
@@ -261,9 +261,15 @@ class SimpleSwitchTest(BfRuntimeTest):
                 if udp_datagram:
                     send_packet(self, 320, udp_datagram)   
         def write_queue(packet,queue,write_count,queue_max):
-            queue.put(packet,block=False)
-            print("write ++++++++++++++")
-            write_count.value +=1 
+            try:
+                queue.put(packet,block=False)
+                print("write ++++++++++++++")
+                write_count.value +=1 
+            except queue_module.Full:
+                print("FULL!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
+            
+            
+            
             # print("wirte count", write_count.value)
         def sniff_packets(queue,write_count,queue_max):
             # sniff(iface="enp6s0", prn=lambda x: queue.put(x,block=False), store=0)
