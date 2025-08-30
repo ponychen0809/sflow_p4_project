@@ -293,18 +293,18 @@ class SimpleSwitchTest(BfRuntimeTest):
         error_count = multiprocessing.Value('i', 0)
         queue_max = multiprocessing.Value('i', 0)
         pkt_count = multiprocessing.Value('i', 0)
-        packet_queue = multiprocessing.Queue(maxsize=80)
+        packet_queue = multiprocessing.Queue(maxsize=800)
         sniff_process = multiprocessing.Process(target=sniff_packets, args=(packet_queue,write_count,queue_max))
         handle_process_1 = multiprocessing.Process(target=handle_pkt_process, args=(packet_queue, agent, pkt_count,error_count,write_count,queue_max))
-        # handle_process_2 = multiprocessing.Process(target=handle_pkt_process, args=(packet_queue, agent, pkt_count,error_count,write_count,queue_max))
+        handle_process_2 = multiprocessing.Process(target=handle_pkt_process, args=(packet_queue, agent, pkt_count,error_count,write_count,queue_max))
 
         sniff_process.start()
         handle_process_1.start()
-        # handle_process_2.start()
+        handle_process_2.start()
 
         sniff_process.join()
         handle_process_1.join()
-        # handle_process_2.join()
+        handle_process_2.join()
 
     
     def cleanUp(self):
