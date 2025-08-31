@@ -271,6 +271,7 @@ class SimpleSwitchTest(BfRuntimeTest):
             
             
             
+
             # print("wirte count", write_count.value)
         def sniff_packets(queue,write_count,queue_max):
             # sniff(iface="enp6s0", prn=lambda x: queue.put(x,block=False), store=0)
@@ -293,7 +294,7 @@ class SimpleSwitchTest(BfRuntimeTest):
         error_count = multiprocessing.Value('i', 0)
         queue_max = multiprocessing.Value('i', 0)
         pkt_count = multiprocessing.Value('i', 0)
-        packet_queue = multiprocessing.Queue(maxsize=800)
+        packet_queue = multiprocessing.Queue(maxsize=80)
         sniff_process = multiprocessing.Process(target=sniff_packets, args=(packet_queue,write_count,queue_max))
         handle_process_1 = multiprocessing.Process(target=handle_pkt_process, args=(packet_queue, agent, pkt_count,error_count,write_count,queue_max))
         handle_process_2 = multiprocessing.Process(target=handle_pkt_process, args=(packet_queue, agent, pkt_count,error_count,write_count,queue_max))
