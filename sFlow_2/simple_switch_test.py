@@ -292,8 +292,8 @@ class SimpleSwitchTest(BfRuntimeTest):
                     # print("queue max: ",queue_max.value)
                     packet = queue.get()
                     handle_pkt_count.value += 1
-                    f.write("handle_pkt_count: ",handle_pkt_count.value,"\n")
-                    f.close()
+                    # f.write("handle_pkt_count: ",handle_pkt_count.value,"\n")
+                    # f.close()
                     print("handle_pkt_count: ", handle_pkt_count.value)
                     handle_pkt(packet, agent, None, pkt_count,error_count,write_count,queue_max,queue)  # 假設沒有實際的 mirror 參數
                     
