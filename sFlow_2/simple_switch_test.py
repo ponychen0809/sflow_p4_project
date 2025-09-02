@@ -288,8 +288,8 @@ class SimpleSwitchTest(BfRuntimeTest):
                     handle_pkt(packet, agent, None, pkt_count,error_count,write_count,queue_max,queue)  # 假設沒有實際的 mirror 參數
                     
                     # 這裡可以進一步處理鏡像的邏輯，根據需要修改
-                else:
-                    time.sleep(0.1)  # 避免過於頻繁的輪詢
+                # else:
+                #     time.sleep(0.1)  # 避免過於頻繁的輪詢
         write_count = multiprocessing.Value('i', 0)
         error_count = multiprocessing.Value('i', 0)
         queue_max = multiprocessing.Value('i', 0)
