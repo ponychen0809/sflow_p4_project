@@ -286,17 +286,19 @@ class SimpleSwitchTest(BfRuntimeTest):
             log_file = "process_" + str(proc_id) + ".txt"
             f = open(log_file, "w")
             while True:
+                f = open(log_file, "w")
+
                 if not queue.empty():
                     if queue.qsize() > queue_max.value:
                         queue_max.value = queue.qsize()
                     # print("queue max: ",queue_max.value)
                     packet = queue.get()
                     handle_pkt_count.value += 1
-                    # f.write("handle_pkt_count: ",handle_pkt_count.value,"\n")
-                    # f.close()
+                    f.write("handle_pkt_count: ",handle_pkt_count.value,"\n")
                     print("handle_pkt_count: ", handle_pkt_count.value)
                     handle_pkt(packet, agent, None, pkt_count,error_count,write_count,queue_max,queue)  # 假設沒有實際的 mirror 參數
-                    
+                f.close()
+
                 # else:
                 #     time.sleep(0.1)  # 避免過於頻繁的輪詢
         write_count = multiprocessing.Value('i', 0)
