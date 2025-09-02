@@ -287,7 +287,7 @@ class SimpleSwitchTest(BfRuntimeTest):
             log_file = "process_" + str(proc_id) + ".txt"
             # f = open(log_file, "w")
             while True:
-                f = open(log_file, "w")
+                f = open(log_file, "a")
 
                 if not queue.empty():
                     if queue.qsize() > queue_max.value:
