@@ -269,6 +269,7 @@ class SimpleSwitchTest(BfRuntimeTest):
                 # print("write ++++++++++++++")
                 write_count.value +=1 
             except queue_module.Full:
+                write_count.value = write_count.value
                 # print("[ERROR] queue full !!!!!!!!!!!!!!!")
                 # print("FULL!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
             
