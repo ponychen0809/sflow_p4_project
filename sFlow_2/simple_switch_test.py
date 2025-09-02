@@ -283,7 +283,7 @@ class SimpleSwitchTest(BfRuntimeTest):
 
         def handle_pkt_process(queue, agent, pkt_count,error_count,write_count,queue_max,handle_pkt_count,proc_id):
             # handle_pkt_count = 0
-            log_file = f"process_{proc_id}.txt"
+            log_file = f"process_" + str(proc_id) + ".txt"
             f = open(log_file, "w")
             while True:
                 if not queue.empty():
