@@ -228,8 +228,9 @@ class SimpleSwitchTest(BfRuntimeTest):
                 # print("error_count: ", error_count.value)
                 return
             # print("error_count: ", error_count.value)
-            print("\nqueue max: ", queue_max.value)
-            print("\nqueue size: ", queue.qsize())
+            print(os.getpid())
+            print("queue max: ", queue_max.value)
+            print("queue size: ", queue.qsize())
             print("wirte count", write_count.value)
             pkt_count.value += 1
             print("Receive packet: ", pkt_count.value)
@@ -287,7 +288,6 @@ class SimpleSwitchTest(BfRuntimeTest):
                     packet = queue.get()
                     handle_pkt(packet, agent, None, pkt_count,error_count,write_count,queue_max,queue)  # 假設沒有實際的 mirror 參數
                     
-                    # 這裡可以進一步處理鏡像的邏輯，根據需要修改
                 # else:
                 #     time.sleep(0.1)  # 避免過於頻繁的輪詢
         write_count = multiprocessing.Value('i', 0)
