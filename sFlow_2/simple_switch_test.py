@@ -227,7 +227,6 @@ class SimpleSwitchTest(BfRuntimeTest):
                 error_count.value += 1
                 # print("error_count: ", error_count.value)
                 return
-            # print("error_count: ", error_count.value)
             print("\n===============")
             print(os.getpid())
             print("queue max: ", queue_max.value)
@@ -235,6 +234,8 @@ class SimpleSwitchTest(BfRuntimeTest):
             print("wirte count", write_count.value)
             pkt_count.value += 1
             print("Receive packet: ", pkt_count.value)
+            print("error_count: ", error_count.value)
+
 
             pkt = bytes(packet)
             mirror_pkt = Mirror(pkt[MIRRORING_METADATA_OFFSET:MIRRORING_METADATA_OFFSET + MIRRORING_METADATA_LENGTH])
