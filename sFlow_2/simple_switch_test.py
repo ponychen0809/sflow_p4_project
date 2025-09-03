@@ -230,7 +230,7 @@ class SimpleSwitchTest(BfRuntimeTest):
                 return
             global receive_count
             receive_count +=1
-            print("\n===============")
+            # print("\n===============")
             # print(os.getpid())
             # print("queue max: ", queue_max.value)
             # print("queue size: ", queue.qsize())
@@ -244,16 +244,16 @@ class SimpleSwitchTest(BfRuntimeTest):
             mirror_pkt = Mirror(pkt[MIRRORING_METADATA_OFFSET:MIRRORING_METADATA_OFFSET + MIRRORING_METADATA_LENGTH])
             # print(proc_id,"Total packet: ", mirror_pkt.total_packets)
             # print("===============")
-            f.write("queue max: "+str(queue_max.value)+"\n")
-            f.write("queue size: "+str(queue.qsize())+"\n")
-            f.write("wirte count: "+str(write_count.value)+"\n")
-            f.write("error count: "+str(error_count.value)+"\n")
-            f.write("Total packet: " + str(mirror_pkt.total_packets)+ "\n" )
-            # f.flush()
+            # f.write("queue max: "+str(queue_max.value)+"\n")
+            # f.write("queue size: "+str(queue.qsize())+"\n")
+            # f.write("wirte count: "+str(write_count.value)+"\n")
+            # f.write("error count: "+str(error_count.value)+"\n")
+            # f.write("Total packet: " + str(mirror_pkt.total_packets)+ "\n" )
+            # # f.flush()
             
-            f.write("===============\n")
-            f.flush()
-            f.close()
+            # f.write("===============\n")
+            # f.flush()
+            # f.close()
 
             ethernet = Ether(pkt[ETHERNET_HEADER_OFFSET:ETHERNET_HEADER_OFFSET + ETHERNET_HEADER_LENGTH])
 
@@ -300,13 +300,13 @@ class SimpleSwitchTest(BfRuntimeTest):
             # handle_pkt_count = 0
             log_file = "./log/process_" + str(proc_id) + ".txt"
             # log_file = "./log/log.txt" 
-            f = open(log_file, "w")
-            f.write(str(os.getpid())+"\n")
-            f.flush()
-            f.close()
+            # f = open(log_file, "w")
+            # f.write(str(os.getpid())+"\n")
+            # f.flush()
+            # f.close()
             a = 0
             while True:
-                f = open(log_file, "a")
+                # f = open(log_file, "a")
 
                 if not queue.empty():
                     if queue.qsize() > queue_max.value:
@@ -315,16 +315,16 @@ class SimpleSwitchTest(BfRuntimeTest):
                     packet = queue.get()
                     
                     handle_pkt_count.value += 1
-                    f.write("\n===============\n")
+                    # f.write("\n===============\n")
 
                     # f.write("handle_pkt_count: "+str(handle_pkt_count.value)+"\n")
-                    a += 1
-                    f.write("handle_pkt_count: "+str(a)+"\n")
+                    # a += 1
+                    # f.write("handle_pkt_count: "+str(a)+"\n")
 
-                    f.flush()
+                    # f.flush()
                     # print("handle_pkt_count: ", handle_pkt_count.value)
                     handle_pkt(packet, agent, None, pkt_count,error_count,write_count,queue_max,queue,f,proc_id)  # 假設沒有實際的 mirror 參數
-                f.close()
+                # f.close()
 
                 # else:
                 #     time.sleep(0.1)  # 避免過於頻繁的輪詢
