@@ -2,7 +2,7 @@
 import ptf
 from ptf.testutils import *
 from scapy.all import *
-import queue as queue_module
+
 ####### PTF modules for BFRuntime Client Library APIs #######
 import grpc
 import bfrt_grpc.bfruntime_pb2 as bfruntime_pb2
@@ -26,7 +26,7 @@ import struct
 import time
 import sflow
 import threading
-import multiprocessing
+
 MIRRORING_METADATA_OFFSET = 0
 MIRRORING_METADATA_LENGTH = 8
 
@@ -45,7 +45,7 @@ UDP_HEADER_LENGTH = 20
 TYPE_IPV4 = 0x0800
 PROTO_TCP = 6
 PROTO_UDP = 17
-receive_count  = 0
+pkt_count = 0
 class Mirror(Packet):
     name = "Mirror"
 
@@ -220,142 +220,42 @@ class SimpleSwitchTest(BfRuntimeTest):
             sub_agent_id=0,
             collector_address="10.10.3.1"
         )
-        def handle_pkt(packet, agent, mirror, pkt_count,error_count,write_count,queue_max,queue,f,proc_id):
+
+        def handle_pkt(packet):
             
-            # print("\nwirte count", write_count.value)
-            # print("===== handle packet ======")
             if len(packet) != 56:
-                # error_count.value += 1
-                # print("error_count: ", error_count.value)
                 return
-            global receive_count
-            receive_count +=1
-            # print("\n===============")
-            # print(os.getpid())
-            print("queue max: ", queue_max.value)
-            # print("queue size: ", queue.qsize())
-            # print("wirte count", write_count.value)
-            pkt_count.value += 1
-            print(proc_id,"Receive packet: ", receive_count)
-            print("sleep count: " ,error_count.value)
-            # print("error_count: ", error_count.value)
-
-
+            global pkt_count 
+            pkt_count = pkt_count+1
+            print("receive packet: ",pkt_count)
             pkt = bytes(packet)
-            mirror_pkt = Mirror(pkt[MIRRORING_METADATA_OFFSET:MIRRORING_METADATA_OFFSET + MIRRORING_METADATA_LENGTH])
-            print(proc_id,"Total packet: ", mirror_pkt.total_packets)
-            # print("===============")
-            # f.write("queue max: "+str(queue_max.value)+"\n")
-            # f.write("queue size: "+str(queue.qsize())+"\n")
-            # f.write("wirte count: "+str(write_count.value)+"\n")
-            # f.write("error count: "+str(error_count.value)+"\n")
-            # f.write("Total packet: " + str(mirror_pkt.total_packets)+ "\n" )
-            # # f.flush()
+
+            mirror = Mirror(pkt[MIRRORING_METADATA_OFFSET:MIRRORING_METADATA_OFFSET+MIRRORING_METADATA_LENGTH])
+            print("total packet: ",mirror.total_packets)
+            ethernet = Ether(pkt[ETHERNET_HEADER_OFFSET:ETHERNET_HEADER_OFFSET+ETHERNET_HEADER_LENGTH])
             
-            # f.write("===============\n")
-            # f.flush()
-            # f.close()
-
-            ethernet = Ether(pkt[ETHERNET_HEADER_OFFSET:ETHERNET_HEADER_OFFSET + ETHERNET_HEADER_LENGTH])
-
-            if ethernet.type != TYPE_IPV4:
+            if (ethernet.type != TYPE_IPV4):
                 return
-
-            ip = IP(pkt[IP_HEADER_OFFSET:IP_HEADER_OFFSET + IP_HEADER_LENGTH])
-
-            if ip.proto != PROTO_TCP and ip.proto != PROTO_UDP:
+            
+            ip = IP(pkt[IP_HEADER_OFFSET:IP_HEADER_OFFSET+IP_HEADER_LENGTH])
+            
+            if (ip.proto != PROTO_TCP and ip.proto != PROTO_UDP):
                 return
+            
+            if (ip.proto == PROTO_TCP):
+                tcp = TCP(pkt[TCP_HEADER_OFFSET:TCP_HEADER_OFFSET+TCP_HEADER_LENGTH])
 
-            if ip.proto == PROTO_TCP:
-                tcp = TCP(pkt[TCP_HEADER_OFFSET:TCP_HEADER_OFFSET + TCP_HEADER_LENGTH])
-                udp_datagram = agent.processSamples(ip_layer=ip, layer4=tcp, ingress_port=mirror_pkt.ingress_port,
-                                                    egress_port=mirror_pkt.egress_port, total_packets=mirror_pkt.total_packets)
+                udp_datagram = agent.processSamples(ip_layer=ip, layer4=tcp, ingress_port=mirror.ingress_port, egress_port=mirror.egress_port, total_packets=mirror.total_packets)
                 if udp_datagram:
-                    send_packet(self, 320, udp_datagram)   
-            elif ip.proto == PROTO_UDP:
-                udp = UDP(pkt[UDP_HEADER_OFFSET:UDP_HEADER_OFFSET + UDP_HEADER_LENGTH])
-                udp_datagram = agent.processSamples(ip_layer=ip, layer4=udp, ingress_port=mirror_pkt.ingress_port,
-                                                    egress_port=mirror_pkt.egress_port, total_packets=mirror_pkt.total_packets)
+                    send_packet(self, 320, udp_datagram)
+            elif (ip.proto == PROTO_UDP):
+                udp = UDP(pkt[UDP_HEADER_OFFSET:UDP_HEADER_OFFSET+UDP_HEADER_LENGTH])
+
+                udp_datagram = agent.processSamples(ip_layer=ip, layer4=udp, ingress_port=mirror.ingress_port, egress_port=mirror.egress_port, total_packets=mirror.total_packets)
                 if udp_datagram:
-                    send_packet(self, 320, udp_datagram)   
-        def write_queue(packet,queue,write_count,queue_max):
-            try:
-                queue.put(packet,block=False)
-                # print("write ++++++++++++++")
-                write_count.value +=1 
-            except queue_module.Full:
-                write_count.value = write_count.value
-                # print("[ERROR] queue full !!!!!!!!!!!!!!!")
-                # print("FULL!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
-            
-            
-            
+                    send_packet(self, 320, udp_datagram)       
 
-            # print("wirte count", write_count.value)
-        def sniff_packets(queue,write_count,queue_max):
-            # sniff(iface="enp6s0", prn=lambda x: queue.put(x,block=False), store=0)
-            sniff(iface="enp6s0", prn=lambda packet: write_queue(packet, queue,write_count,queue_max), store=0)
-            
-
-        def handle_pkt_process(queue, agent, pkt_count,error_count,write_count,queue_max,handle_pkt_count,proc_id):
-            flag = 0
-            # handle_pkt_count = 0
-            log_file = "./log/process_" + str(proc_id) + ".txt"
-            # log_file = "./log/log.txt" 
-            # f = open(log_file, "w")
-            f = 0
-            # f.write(str(os.getpid())+"\n")
-            # f.flush()
-            # f.close()
-            a = 0
-            while True:
-                # f = open(log_file, "a")
-
-                if not queue.empty():
-                    flag = 1
-                    if queue.qsize() > queue_max.value:
-                        queue_max.value = queue.qsize()
-                    # print("queue max: ",queue_max.value)
-                    packet = queue.get()
-                    
-                    handle_pkt_count.value += 1
-                    # f.write("\n===============\n")
-
-                    # f.write("handle_pkt_count: "+str(handle_pkt_count.value)+"\n")
-                    # a += 1
-                    # f.write("handle_pkt_count: "+str(a)+"\n")
-
-                    # f.flush()
-                    # print("handle_pkt_count: ", handle_pkt_count.value)
-                    handle_pkt(packet, agent, None, pkt_count,error_count,write_count,queue_max,queue,f,proc_id)  # 假設沒有實際的 mirror 參數
-                # f.close()
-
-                else:
-                    if flag == 1:
-                        error_count.value += 1
-                        flag = 0
-                        
-                    time.sleep(0.1)  # 避免過於頻繁的輪詢
-                    # print("sleep!!")
-        write_count = multiprocessing.Value('i', 0)
-        error_count = multiprocessing.Value('i', 0)
-        handle_pkt_count = multiprocessing.Value('i', 0)
- 
-        queue_max = multiprocessing.Value('i', 0)
-        pkt_count = multiprocessing.Value('i', 0)
-        packet_queue = multiprocessing.Queue(maxsize=80)
-        sniff_process = multiprocessing.Process(target=sniff_packets, args=(packet_queue,write_count,queue_max))
-        handle_process_1 = multiprocessing.Process(target=handle_pkt_process, args=(packet_queue, agent, pkt_count,error_count,write_count,queue_max,handle_pkt_count,1))
-        # handle_process_2 = multiprocessing.Process(target=handle_pkt_process, args=(packet_queue, agent, pkt_count,error_count,write_count,queue_max,handle_pkt_count,2))
-
-        sniff_process.start()
-        handle_process_1.start()
-        # handle_process_2.start()
-
-        sniff_process.join()
-        handle_process_1.join()
-        # handle_process_2.join()
-
+        sniff(iface="enp6s0", prn=handle_pkt)
     
     def cleanUp(self):
         try:
