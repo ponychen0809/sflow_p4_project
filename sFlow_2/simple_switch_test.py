@@ -301,6 +301,7 @@ class SimpleSwitchTest(BfRuntimeTest):
             log_file = "./log/process_" + str(proc_id) + ".txt"
             # log_file = "./log/log.txt" 
             # f = open(log_file, "w")
+            f = 0
             # f.write(str(os.getpid())+"\n")
             # f.flush()
             # f.close()
