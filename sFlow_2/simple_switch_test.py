@@ -45,7 +45,7 @@ UDP_HEADER_LENGTH = 20
 TYPE_IPV4 = 0x0800
 PROTO_TCP = 6
 PROTO_UDP = 17
-
+receive_count  = 0
 class Mirror(Packet):
     name = "Mirror"
 
@@ -221,19 +221,22 @@ class SimpleSwitchTest(BfRuntimeTest):
             collector_address="10.10.3.1"
         )
         def handle_pkt(packet, agent, mirror, pkt_count,error_count,write_count,queue_max,queue,f):
+            
             # print("\nwirte count", write_count.value)
             # print("===== handle packet ======")
             if len(packet) != 56:
                 error_count.value += 1
                 # print("error_count: ", error_count.value)
                 return
+            global receive_count
+            receive_count +=1
             print("\n===============")
             print(os.getpid())
             print("queue max: ", queue_max.value)
             print("queue size: ", queue.qsize())
             print("wirte count", write_count.value)
             pkt_count.value += 1
-            print("Receive packet: ", pkt_count.value)
+            print("Receive packet: ", receive_count)
             print("error_count: ", error_count.value)
 
 
@@ -244,7 +247,7 @@ class SimpleSwitchTest(BfRuntimeTest):
             f.write("queue max: "+str(queue_max.value)+"\n")
             f.write("queue size: "+str(queue.qsize())+"\n")
             f.write("wirte count: "+str(write_count.value)+"\n")
-            f.write("pkt count: "+str(pkt_count.value)+"\n")
+            f.write("pkt count: "+str(receive_count)+"\n")
             f.write("error count: "+str(error_count.value)+"\n")
             f.write("Total packet: " + str(mirror_pkt.total_packets)+ "\n" )
             # f.flush()
