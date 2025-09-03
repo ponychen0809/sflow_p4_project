@@ -242,7 +242,7 @@ class SimpleSwitchTest(BfRuntimeTest):
 
             pkt = bytes(packet)
             mirror_pkt = Mirror(pkt[MIRRORING_METADATA_OFFSET:MIRRORING_METADATA_OFFSET + MIRRORING_METADATA_LENGTH])
-            # print(proc_id,"Total packet: ", mirror_pkt.total_packets)
+            print(proc_id,"Total packet: ", mirror_pkt.total_packets)
             # print("===============")
             # f.write("queue max: "+str(queue_max.value)+"\n")
             # f.write("queue size: "+str(queue.qsize())+"\n")
