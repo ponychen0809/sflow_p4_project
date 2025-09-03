@@ -241,7 +241,6 @@ class SimpleSwitchTest(BfRuntimeTest):
             mirror_pkt = Mirror(pkt[MIRRORING_METADATA_OFFSET:MIRRORING_METADATA_OFFSET + MIRRORING_METADATA_LENGTH])
             print("Total packet: ", mirror_pkt.total_packets)
             print("===============")
-            f.write("\n===============\n")
             f.write("queue max: "+str(queue_max.value)+"\n")
             f.write("queue size: "+str(queue.qsize())+"\n")
             f.write("wirte count: "+str(write_count.value)+"\n")
@@ -310,7 +309,9 @@ class SimpleSwitchTest(BfRuntimeTest):
                     # print("queue max: ",queue_max.value)
                     packet = queue.get()
                     handle_pkt_count.value += 1
-                    f.write("\nhandle_pkt_count: "+str(handle_pkt_count.value)+"\n")
+                    f.write("\n===============\n")
+
+                    f.write("handle_pkt_count: "+str(handle_pkt_count.value))
                     f.flush()
                     print("handle_pkt_count: ", handle_pkt_count.value)
                     handle_pkt(packet, agent, None, pkt_count,error_count,write_count,queue_max,queue,f)  # 假設沒有實際的 mirror 參數
