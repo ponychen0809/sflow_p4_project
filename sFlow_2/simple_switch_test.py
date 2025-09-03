@@ -302,6 +302,7 @@ class SimpleSwitchTest(BfRuntimeTest):
             f.write(str(os.getpid())+"\n")
             f.flush()
             f.close()
+            a = 0
             while True:
                 f = open(log_file, "a")
 
@@ -310,10 +311,14 @@ class SimpleSwitchTest(BfRuntimeTest):
                         queue_max.value = queue.qsize()
                     # print("queue max: ",queue_max.value)
                     packet = queue.get()
+                    
                     handle_pkt_count.value += 1
                     f.write("\n===============\n")
 
-                    f.write("handle_pkt_count: "+str(handle_pkt_count.value)+"\n")
+                    # f.write("handle_pkt_count: "+str(handle_pkt_count.value)+"\n")
+                    a += 1
+                    f.write("handle_pkt_count: "+str(a)+"\n")
+
                     f.flush()
                     print("handle_pkt_count: ", handle_pkt_count.value)
                     handle_pkt(packet, agent, None, pkt_count,error_count,write_count,queue_max,queue,f)  # 假設沒有實際的 mirror 參數
