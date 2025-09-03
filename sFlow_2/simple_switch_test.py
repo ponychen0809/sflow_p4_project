@@ -336,7 +336,7 @@ class SimpleSwitchTest(BfRuntimeTest):
                         flag = 0
                         
                     time.sleep(0.1)  # 避免過於頻繁的輪詢
-                    print("sleep!!")
+                    # print("sleep!!")
         write_count = multiprocessing.Value('i', 0)
         error_count = multiprocessing.Value('i', 0)
         handle_pkt_count = multiprocessing.Value('i', 0)
