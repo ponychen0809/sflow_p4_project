@@ -232,7 +232,7 @@ class SimpleSwitchTest(BfRuntimeTest):
             receive_count +=1
             # print("\n===============")
             # print(os.getpid())
-            # print("queue max: ", queue_max.value)
+            print("queue max: ", queue_max.value)
             # print("queue size: ", queue.qsize())
             # print("wirte count", write_count.value)
             pkt_count.value += 1
