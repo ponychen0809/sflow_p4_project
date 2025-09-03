@@ -298,6 +298,7 @@ class SimpleSwitchTest(BfRuntimeTest):
             
 
         def handle_pkt_process(queue, agent, pkt_count,error_count,write_count,queue_max,handle_pkt_count,proc_id):
+            flag = 0
             # handle_pkt_count = 0
             log_file = "./log/process_" + str(proc_id) + ".txt"
             # log_file = "./log/log.txt" 
@@ -311,6 +312,7 @@ class SimpleSwitchTest(BfRuntimeTest):
                 # f = open(log_file, "a")
 
                 if not queue.empty():
+                    flag = 1
                     if queue.qsize() > queue_max.value:
                         queue_max.value = queue.qsize()
                     # print("queue max: ",queue_max.value)
@@ -329,7 +331,9 @@ class SimpleSwitchTest(BfRuntimeTest):
                 # f.close()
 
                 else:
-                    error_count.value += 1
+                    if flag == 1:
+                        error_count.value += 1
+                        flag = 0
                     time.sleep(0.1)  # 避免過於頻繁的輪詢
         write_count = multiprocessing.Value('i', 0)
         error_count = multiprocessing.Value('i', 0)
