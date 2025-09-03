@@ -237,7 +237,7 @@ class SimpleSwitchTest(BfRuntimeTest):
             # print("wirte count", write_count.value)
             pkt_count.value += 1
             print(proc_id,"Receive packet: ", receive_count)
-            
+            print("sleep count: " ,error_count.value)
             # print("error_count: ", error_count.value)
 
 
@@ -334,8 +334,9 @@ class SimpleSwitchTest(BfRuntimeTest):
                     if flag == 1:
                         error_count.value += 1
                         flag = 0
-                        print("sleep count: " ,error_count.value)
+                        
                     time.sleep(0.1)  # 避免過於頻繁的輪詢
+                    print("sleep!!")
         write_count = multiprocessing.Value('i', 0)
         error_count = multiprocessing.Value('i', 0)
         handle_pkt_count = multiprocessing.Value('i', 0)
