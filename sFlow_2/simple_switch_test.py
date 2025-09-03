@@ -220,7 +220,7 @@ class SimpleSwitchTest(BfRuntimeTest):
             sub_agent_id=0,
             collector_address="10.10.3.1"
         )
-        def handle_pkt(packet, agent, mirror, pkt_count,error_count,write_count,queue_max,queue):
+        def handle_pkt(packet, agent, mirror, pkt_count,error_count,write_count,queue_max,queue,f):
             # print("\nwirte count", write_count.value)
             # print("===== handle packet ======")
             if len(packet) != 56:
@@ -241,6 +241,18 @@ class SimpleSwitchTest(BfRuntimeTest):
             mirror_pkt = Mirror(pkt[MIRRORING_METADATA_OFFSET:MIRRORING_METADATA_OFFSET + MIRRORING_METADATA_LENGTH])
             print("Total packet: ", mirror_pkt.total_packets)
             print("===============")
+            f.write("\n===============\n")
+            f.write("queue max: "+str(queue_max.value)+"\n")
+            f.write("queue size: "+str(queue.qsize())+"\n")
+            f.write("wirte count: "+str(write_count.value)+"\n")
+            f.write("pkt count: "+str(pkt_count.value)+"\n")
+            f.write("error count: "+str(error_count.value)+"\n")
+            # f.flush()
+            
+            f.write("===============\n")
+            f.flush()
+            f.close()
+
             ethernet = Ether(pkt[ETHERNET_HEADER_OFFSET:ETHERNET_HEADER_OFFSET + ETHERNET_HEADER_LENGTH])
 
             if ethernet.type != TYPE_IPV4:
@@ -285,7 +297,10 @@ class SimpleSwitchTest(BfRuntimeTest):
         def handle_pkt_process(queue, agent, pkt_count,error_count,write_count,queue_max,handle_pkt_count,proc_id):
             # handle_pkt_count = 0
             log_file = "process_" + str(proc_id) + ".txt"
-            # f = open(log_file, "w")
+            f = open(log_file, "w")
+            f.write(os.getpid()+"\n")
+            f.flush()
+            f.close()
             while True:
                 f = open(log_file, "a")
 
@@ -298,7 +313,7 @@ class SimpleSwitchTest(BfRuntimeTest):
                     f.write("\nhandle_pkt_count: "+str(handle_pkt_count.value)+"\n")
                     f.flush()
                     print("handle_pkt_count: ", handle_pkt_count.value)
-                    handle_pkt(packet, agent, None, pkt_count,error_count,write_count,queue_max,queue)  # 假設沒有實際的 mirror 參數
+                    handle_pkt(packet, agent, None, pkt_count,error_count,write_count,queue_max,queue,f)  # 假設沒有實際的 mirror 參數
                 f.close()
 
                 # else:
