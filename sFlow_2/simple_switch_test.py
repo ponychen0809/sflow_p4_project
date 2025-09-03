@@ -246,6 +246,7 @@ class SimpleSwitchTest(BfRuntimeTest):
             f.write("wirte count: "+str(write_count.value)+"\n")
             f.write("pkt count: "+str(pkt_count.value)+"\n")
             f.write("error count: "+str(error_count.value)+"\n")
+            f.write("Total packet: " + str(mirror_pkt.total_packets)+ "\n" )
             # f.flush()
             
             f.write("===============\n")
@@ -295,8 +296,8 @@ class SimpleSwitchTest(BfRuntimeTest):
 
         def handle_pkt_process(queue, agent, pkt_count,error_count,write_count,queue_max,handle_pkt_count,proc_id):
             # handle_pkt_count = 0
-            # log_file = "./log/process_" + str(proc_id) + ".txt"
-            log_file = "./log/log.txt" 
+            log_file = "./log/process_" + str(proc_id) + ".txt"
+            # log_file = "./log/log.txt" 
             f = open(log_file, "w")
             f.write(str(os.getpid())+"\n")
             f.flush()
