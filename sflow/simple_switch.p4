@@ -430,6 +430,87 @@ control MyIngress(
             register_val = (bit<32>)hdr.ipv4.diffserv;
         }
     }; 
+
+    //********************* register_3 *********************//
+    Register<bit<32>,bit<1>>(1, 0) reg_ingress_port_4;
+    RegisterAction<bit<32>, bit<1>, bit<32>>(reg_ingress_port_4) reg_ingress_port_4_action_read_set = {
+        void apply(inout bit<32> register_val, out bit<32> read_val) {
+            read_val = register_val;
+            register_val = (bit<32>)ig_intr_md.ingress_port;
+        }
+    };
+
+    Register<bit<32>,bit<1>>(1, 0) reg_egress_port_4;
+    RegisterAction<bit<32>, bit<1>, bit<32>>(reg_egress_port_4) reg_egress_port_4_action_read_set = {
+        void apply(inout bit<32> register_val, out bit<32> read_val) {
+            read_val = register_val;
+            register_val = (bit<32>) ig_tm_md.ucast_egress_port;
+        }
+    };
+
+    Register<bit<32>,bit<1>>(1, 0) reg_pkt_length_4;
+    RegisterAction<bit<32>, bit<1>, bit<32>>(reg_pkt_length_4) reg_pkt_length_4_action_read_set = {
+        void apply(inout bit<32> register_val, out bit<32> read_val) {
+            read_val = register_val;
+            register_val = (bit<32>)hdr.ipv4.total_len;
+        }
+    };
+
+    Register<bit<32>,bit<1>>(1, 0) reg_protocol_4;
+    RegisterAction<bit<32>, bit<1>, bit<32>>(reg_protocol_4) reg_protocol_4_action_read_set = {
+        void apply(inout bit<32> register_val, out bit<32> read_val) {
+            read_val = register_val;
+            register_val = (bit<32>)hdr.ipv4.protocol;
+        }
+    };
+
+    Register<bit<32>,bit<1>>(1, 0) reg_src_ip_4;
+    RegisterAction<bit<32>, bit<1>, bit<32>>(reg_src_ip_4) reg_src_ip_4_action_read_set = {
+        void apply(inout bit<32> register_val, out bit<32> read_val) {
+            read_val = register_val;
+            register_val = (bit<32>)hdr.ipv4.src_addr;
+        }
+    };
+
+    Register<bit<32>,bit<1>>(1, 0) reg_dst_ip_4;
+    RegisterAction<bit<32>, bit<1>, bit<32>>(reg_dst_ip_4) reg_dst_ip_4_action_read_set = {
+        void apply(inout bit<32> register_val, out bit<32> read_val) {
+            read_val = register_val;
+            register_val = (bit<32>)hdr.ipv4.dst_addr;
+        }
+    };
+
+    Register<bit<32>,bit<1>>(1, 0) reg_src_port_4;
+    RegisterAction<bit<32>, bit<1>, bit<32>>(reg_src_port_4) reg_src_port_4_action_read_set = {
+        void apply(inout bit<32> register_val, out bit<32> read_val) {
+            read_val = register_val;
+            register_val = (bit<32>)hdr.udp.src_port;
+        }
+    };
+
+    Register<bit<32>,bit<1>>(1, 0) reg_dst_port_4;
+    RegisterAction<bit<32>, bit<1>, bit<32>>(reg_dst_port_4) reg_dst_port_4_action_read_set = {
+        void apply(inout bit<32> register_val, out bit<32> read_val) {
+            read_val = register_val;
+            register_val = (bit<32>)hdr.udp.dst_port;
+        }
+    };
+
+    Register<bit<32>,bit<1>>(1, 0) reg_tcp_flag_4;
+    RegisterAction<bit<32>, bit<1>, bit<32>>(reg_tcp_flag_4) reg_tcp_flag_4_action_read_set = {
+        void apply(inout bit<32> register_val, out bit<32> read_val) {
+            read_val = register_val;
+            register_val = (bit<32>)0;
+        }
+    };
+
+    Register<bit<32>,bit<1>>(1, 0) reg_tos_4;
+    RegisterAction<bit<32>, bit<1>, bit<32>>(reg_tos_4) reg_tos_4_action_read_set = {
+        void apply(inout bit<32> register_val, out bit<32> read_val) {
+            read_val = register_val;
+            register_val = (bit<32>)hdr.ipv4.diffserv;
+        }
+    }; 
 //******************************************************//
 
     action send_multicast(bit<16> grp_id, bit<16> rid) {
