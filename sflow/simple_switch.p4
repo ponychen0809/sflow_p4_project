@@ -599,7 +599,7 @@ control MyIngress(
                     hdr.sflow_sample_2.tos = reg_tos_2_action_read_set.execute(0);
     
                 }
-                else if (total_sample == 3){
+                else if (total_sample == 4){
                     hdr.sflow_sample_3.setValid();
                     hdr.sflow_sample_3.input_if = reg_ingress_port_3_action_read_set.execute(0);
                     hdr.sflow_sample_3.output_if = reg_egress_port_3_action_read_set.execute(0);
@@ -631,7 +631,7 @@ control MyIngress(
         }else if(ig_intr_md.ingress_port == 132){
             ig_tm_md.ucast_egress_port = 147;
             hdr.udp.dst_port = (bit<16>)6343;
-            hdr.udp.hdr_length = (bit<16>)356;
+            hdr.udp.hdr_length = (bit<16>)436;
             hdr.ipv4.dst_addr = 0x0a0a0302;
             hdr.sflow_hd.setValid();
             hdr.sflow_hd.version = (bit<32>)5;
@@ -926,6 +926,7 @@ control MyIngressDeparser(packet_out pkt,
         pkt.emit(hdr.sflow_sample_1);
         pkt.emit(hdr.sflow_sample_2);
         pkt.emit(hdr.sflow_sample_3);
+        pkt.emit(hdr.sflow_sample_4);
     }
 }
 
