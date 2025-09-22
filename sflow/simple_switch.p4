@@ -539,7 +539,7 @@ control MyIngress(
         ipv4_table.apply();
 
         
-        bit<16> tmp_ingress_port;
+        bit<9> tmp_ingress_port;
         bit<32> total_packet;
         if(ig_intr_md.ingress_port == 144){
             tmp_ingress_port =1;
