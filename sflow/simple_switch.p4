@@ -595,7 +595,7 @@ control MyIngress(
                     hdr.sflow_sample_2.tcp_flags = reg_tcp_flag_2_action_read_set.execute(0);
                     hdr.sflow_sample_2.tos = reg_tos_2_action_read_set.execute(0);
     
-                }else if (total_sample == 3){
+                }else if (total_sample == 4){
                     hdr.sflow_sample_3.input_if = reg_ingress_port_3_action_read_set.execute(0);
                     hdr.sflow_sample_3.output_if = reg_egress_port_3_action_read_set.execute(0);
                     hdr.sflow_sample_3.pkt_length = reg_pkt_length_3_action_read_set.execute(0);
