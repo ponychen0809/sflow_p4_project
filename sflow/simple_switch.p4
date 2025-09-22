@@ -100,7 +100,7 @@ control MyIngress(
     RegisterAction<bit<32>, bit<1>, bit<32>>(total_sample_count)
         set_total_sample = {
             void apply(inout bit<32> v, out bit<32> new_val) {
-                if (v == 3) {
+                if (v == 4) {
                     v = 0;
                 } else {
                     v = v + 1;
@@ -431,7 +431,7 @@ control MyIngress(
         }
     }; 
 
-    //********************* register_3 *********************//
+//********************* register_4 *********************//
     Register<bit<32>,bit<1>>(1, 0) reg_ingress_port_4;
     RegisterAction<bit<32>, bit<1>, bit<32>>(reg_ingress_port_4) reg_ingress_port_4_action_read_set = {
         void apply(inout bit<32> register_val, out bit<32> read_val) {
@@ -557,8 +557,6 @@ control MyIngress(
             tmp_ingress_port = 10000;
             // total_packet = 2;
         }
-         
- 
 
         if(tmp_ingress_port == 1 && total_packet % 1024 == 0){
           
