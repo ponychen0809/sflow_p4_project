@@ -597,7 +597,7 @@ control MyIngress(
                     hdr.sflow_sample_2.tcp_flags = reg_tcp_flag_2_action_read_set.execute(0);
                     hdr.sflow_sample_2.tos = reg_tos_2_action_read_set.execute(0);
     
-                }else{
+                }else if (total_sample == 3){
                     hdr.sflow_sample_3.input_if = reg_ingress_port_3_action_read_set.execute(0);
                     hdr.sflow_sample_3.output_if = reg_egress_port_3_action_read_set.execute(0);
                     hdr.sflow_sample_3.pkt_length = reg_pkt_length_3_action_read_set.execute(0);
@@ -607,10 +607,20 @@ control MyIngress(
                     hdr.sflow_sample_3.src_port = reg_src_port_3_action_read_set.execute(0);
                     hdr.sflow_sample_3.dst_port = reg_dst_port_3_action_read_set.execute(0);
                     hdr.sflow_sample_3.tcp_flags = reg_tcp_flag_3_action_read_set.execute(0);
+                    
+                }
+                else {
+                    hdr.sflow_sample_4.input_if = reg_ingress_port_4_action_read_set.execute(0);
+                    hdr.sflow_sample_4.output_if = reg_egress_port_4_action_read_set.execute(0);
+                    hdr.sflow_sample_4.pkt_length = reg_pkt_length_4_action_read_set.execute(0);
+                    hdr.sflow_sample_4.protocol = reg_protocol_4_action_read_set.execute(0);
+                    hdr.sflow_sample_4.src_ip = reg_src_ip_4_action_read_set.execute(0);
+                    hdr.sflow_sample_4.dst_ip = reg_dst_ip_4_action_read_set.execute(0);
+                    hdr.sflow_sample_4.src_port = reg_src_port_4_action_read_set.execute(0);
+                    hdr.sflow_sample_4.dst_port = reg_dst_port_4_action_read_set.execute(0);
+                    hdr.sflow_sample_4.tcp_flags = reg_tcp_flag_4_action_read_set.execute(0);
                     send_multicast(1, 1);
-
-                
-            }
+                }
 
             
         }else if(ig_intr_md.ingress_port == 132){
