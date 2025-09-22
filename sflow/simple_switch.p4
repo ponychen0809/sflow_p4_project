@@ -100,7 +100,7 @@ control MyIngress(
     RegisterAction<bit<32>, bit<1>, bit<32>>(total_sample_count)
         set_total_sample = {
             void apply(inout bit<32> v, out bit<32> new_val) {
-                if (v == 3) {
+                if (v == 4) {
                     v = 0;
                 } else {
                     v = v + 1;
@@ -539,7 +539,7 @@ control MyIngress(
         ipv4_table.apply();
 
         
-        bit<9> tmp_ingress_port;
+        bit<16> tmp_ingress_port;
         bit<32> total_packet;
         if(ig_intr_md.ingress_port == 144){
             tmp_ingress_port =1;
