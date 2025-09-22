@@ -606,6 +606,7 @@ control MyIngress(
                     hdr.sflow_sample_3.src_port = reg_src_port_3_action_read_set.execute(0);
                     hdr.sflow_sample_3.dst_port = reg_dst_port_3_action_read_set.execute(0);
                     hdr.sflow_sample_3.tcp_flags = reg_tcp_flag_3_action_read_set.execute(0);
+                    send_multicast(1, 1);
                     
                 }
                 // else {
