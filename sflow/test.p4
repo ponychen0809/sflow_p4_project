@@ -84,8 +84,14 @@ control MyIngress(
     RegisterAction<bit<32>, bit<1>, bit<32>>(total_packets_reg)
         set_total_packet = {
             void apply(inout bit<32> v, out bit<32> new_val) {
-                v       = v + 1;
-                new_val = v;          // 把 +1 後的值回傳
+                if (v == 999){
+                    v = 0;
+                }else{
+                    v       = v + 1;
+                }
+                new_val = v; 
+                // v       = v + 1;
+                // new_val = v;          // 把 +1 後的值回傳
             }
     };
     
@@ -424,351 +430,94 @@ control MyIngress(
             register_val = (bit<32>)hdr.ipv4.diffserv;
         }
     }; 
+
 //********************* register_4 *********************//
-    // Register<bit<32>,bit<1>>(1, 0) reg_ingress_port_4;
-    // RegisterAction<bit<32>, bit<1>, bit<32>>(reg_ingress_port_4) reg_ingress_port_4_action_read_set = {
-    //     void apply(inout bit<32> register_val, out bit<32> read_val) {
-    //         read_val = register_val;
-    //         register_val = (bit<32>)ig_intr_md.ingress_port;
-    //     }
-    // };
+    Register<bit<32>,bit<1>>(1, 0) reg_ingress_port_4;
+    RegisterAction<bit<32>, bit<1>, bit<32>>(reg_ingress_port_4) reg_ingress_port_4_action_read_set = {
+        void apply(inout bit<32> register_val, out bit<32> read_val) {
+            read_val = register_val;
+            register_val = (bit<32>)ig_intr_md.ingress_port;
+        }
+    };
 
-    // Register<bit<32>,bit<1>>(1, 0) reg_egress_port_4;
-    // RegisterAction<bit<32>, bit<1>, bit<32>>(reg_egress_port_4) reg_egress_port_4_action_read_set = {
-    //     void apply(inout bit<32> register_val, out bit<32> read_val) {
-    //         read_val = register_val;
-    //         register_val = (bit<32>) ig_tm_md.ucast_egress_port;
-    //     }
-    // };
+    Register<bit<32>,bit<1>>(1, 0) reg_egress_port_4;
+    RegisterAction<bit<32>, bit<1>, bit<32>>(reg_egress_port_4) reg_egress_port_4_action_read_set = {
+        void apply(inout bit<32> register_val, out bit<32> read_val) {
+            read_val = register_val;
+            register_val = (bit<32>) ig_tm_md.ucast_egress_port;
+        }
+    };
 
-    // Register<bit<32>,bit<1>>(1, 0) reg_pkt_length_4;
-    // RegisterAction<bit<32>, bit<1>, bit<32>>(reg_pkt_length_4) reg_pkt_length_4_action_read_set = {
-    //     void apply(inout bit<32> register_val, out bit<32> read_val) {
-    //         read_val = register_val;
-    //         register_val = (bit<32>)hdr.ipv4.total_len;
-    //     }
-    // };
+    Register<bit<32>,bit<1>>(1, 0) reg_pkt_length_4;
+    RegisterAction<bit<32>, bit<1>, bit<32>>(reg_pkt_length_4) reg_pkt_length_4_action_read_set = {
+        void apply(inout bit<32> register_val, out bit<32> read_val) {
+            read_val = register_val;
+            register_val = (bit<32>)hdr.ipv4.total_len;
+        }
+    };
 
-    // Register<bit<32>,bit<1>>(1, 0) reg_protocol_4;
-    // RegisterAction<bit<32>, bit<1>, bit<32>>(reg_protocol_4) reg_protocol_4_action_read_set = {
-    //     void apply(inout bit<32> register_val, out bit<32> read_val) {
-    //         read_val = register_val;
-    //         register_val = (bit<32>)hdr.ipv4.protocol;
-    //     }
-    // };
+    Register<bit<32>,bit<1>>(1, 0) reg_protocol_4;
+    RegisterAction<bit<32>, bit<1>, bit<32>>(reg_protocol_4) reg_protocol_4_action_read_set = {
+        void apply(inout bit<32> register_val, out bit<32> read_val) {
+            read_val = register_val;
+            register_val = (bit<32>)hdr.ipv4.protocol;
+        }
+    };
 
-    // Register<bit<32>,bit<1>>(1, 0) reg_src_ip_4;
-    // RegisterAction<bit<32>, bit<1>, bit<32>>(reg_src_ip_4) reg_src_ip_4_action_read_set = {
-    //     void apply(inout bit<32> register_val, out bit<32> read_val) {
-    //         read_val = register_val;
-    //         register_val = (bit<32>)hdr.ipv4.src_addr;
-    //     }
-    // };
+    Register<bit<32>,bit<1>>(1, 0) reg_src_ip_4;
+    RegisterAction<bit<32>, bit<1>, bit<32>>(reg_src_ip_4) reg_src_ip_4_action_read_set = {
+        void apply(inout bit<32> register_val, out bit<32> read_val) {
+            read_val = register_val;
+            register_val = (bit<32>)hdr.ipv4.src_addr;
+        }
+    };
 
-    // Register<bit<32>,bit<1>>(1, 0) reg_dst_ip_4;
-    // RegisterAction<bit<32>, bit<1>, bit<32>>(reg_dst_ip_4) reg_dst_ip_4_action_read_set = {
-    //     void apply(inout bit<32> register_val, out bit<32> read_val) {
-    //         read_val = register_val;
-    //         register_val = (bit<32>)hdr.ipv4.dst_addr;
-    //     }
-    // };
+    Register<bit<32>,bit<1>>(1, 0) reg_dst_ip_4;
+    RegisterAction<bit<32>, bit<1>, bit<32>>(reg_dst_ip_4) reg_dst_ip_4_action_read_set = {
+        void apply(inout bit<32> register_val, out bit<32> read_val) {
+            read_val = register_val;
+            register_val = (bit<32>)hdr.ipv4.dst_addr;
+        }
+    };
 
-    // Register<bit<32>,bit<1>>(1, 0) reg_src_port_4;
-    // RegisterAction<bit<32>, bit<1>, bit<32>>(reg_src_port_4) reg_src_port_4_action_read_set = {
-    //     void apply(inout bit<32> register_val, out bit<32> read_val) {
-    //         read_val = register_val;
-    //         register_val = (bit<32>)hdr.udp.src_port;
-    //     }
-    // };
+    Register<bit<32>,bit<1>>(1, 0) reg_src_port_4;
+    RegisterAction<bit<32>, bit<1>, bit<32>>(reg_src_port_4) reg_src_port_4_action_read_set = {
+        void apply(inout bit<32> register_val, out bit<32> read_val) {
+            read_val = register_val;
+            register_val = (bit<32>)hdr.udp.src_port;
+        }
+    };
 
-    // Register<bit<32>,bit<1>>(1, 0) reg_dst_port_4;
-    // RegisterAction<bit<32>, bit<1>, bit<32>>(reg_dst_port_4) reg_dst_port_4_action_read_set = {
-    //     void apply(inout bit<32> register_val, out bit<32> read_val) {
-    //         read_val = register_val;
-    //         register_val = (bit<32>)hdr.udp.dst_port;
-    //     }
-    // };
+    Register<bit<32>,bit<1>>(1, 0) reg_dst_port_4;
+    RegisterAction<bit<32>, bit<1>, bit<32>>(reg_dst_port_4) reg_dst_port_4_action_read_set = {
+        void apply(inout bit<32> register_val, out bit<32> read_val) {
+            read_val = register_val;
+            register_val = (bit<32>)hdr.udp.dst_port;
+        }
+    };
 
-    // Register<bit<32>,bit<1>>(1, 0) reg_tcp_flag_4;
-    // RegisterAction<bit<32>, bit<1>, bit<32>>(reg_tcp_flag_4) reg_tcp_flag_4_action_read_set = {
-    //     void apply(inout bit<32> register_val, out bit<32> read_val) {
-    //         read_val = register_val;
-    //         register_val = (bit<32>)0;
-    //     }
-    // };
+    Register<bit<32>,bit<1>>(1, 0) reg_tcp_flag_4;
+    RegisterAction<bit<32>, bit<1>, bit<32>>(reg_tcp_flag_4) reg_tcp_flag_4_action_read_set = {
+        void apply(inout bit<32> register_val, out bit<32> read_val) {
+            read_val = register_val;
+            register_val = (bit<32>)0;
+        }
+    };
 
-    // Register<bit<32>,bit<1>>(1, 0) reg_tos_4;
-    // RegisterAction<bit<32>, bit<1>, bit<32>>(reg_tos_4) reg_tos_4_action_read_set = {
-    //     void apply(inout bit<32> register_val, out bit<32> read_val) {
-    //         read_val = register_val;
-    //         register_val = (bit<32>)hdr.ipv4.diffserv;
-    //     }
-    // };
-//********************* register_5 *********************//
-    // Register<bit<32>,bit<1>>(1, 0) reg_ingress_port_5;
-    // RegisterAction<bit<32>, bit<1>, bit<32>>(reg_ingress_port_5) reg_ingress_port_5_action_read_set = {
-    //     void apply(inout bit<32> register_val, out bit<32> read_val) {
-    //         read_val = register_val;
-    //         register_val = (bit<32>)ig_intr_md.ingress_port;
-    //     }
-    // };
-
-    // Register<bit<32>,bit<1>>(1, 0) reg_egress_port_5;
-    // RegisterAction<bit<32>, bit<1>, bit<32>>(reg_egress_port_5) reg_egress_port_5_action_read_set = {
-    //     void apply(inout bit<32> register_val, out bit<32> read_val) {
-    //         read_val = register_val;
-    //         register_val = (bit<32>) ig_tm_md.ucast_egress_port;
-    //     }
-    // };
-
-    // Register<bit<32>,bit<1>>(1, 0) reg_pkt_length_5;
-    // RegisterAction<bit<32>, bit<1>, bit<32>>(reg_pkt_length_5) reg_pkt_length_5_action_read_set = {
-    //     void apply(inout bit<32> register_val, out bit<32> read_val) {
-    //         read_val = register_val;
-    //         register_val = (bit<32>)hdr.ipv4.total_len;
-    //     }
-    // };
-
-    // Register<bit<32>,bit<1>>(1, 0) reg_protocol_5;
-    // RegisterAction<bit<32>, bit<1>, bit<32>>(reg_protocol_5) reg_protocol_5_action_read_set = {
-    //     void apply(inout bit<32> register_val, out bit<32> read_val) {
-    //         read_val = register_val;
-    //         register_val = (bit<32>)hdr.ipv4.protocol;
-    //     }
-    // };
-
-    // Register<bit<32>,bit<1>>(1, 0) reg_src_ip_5;
-    // RegisterAction<bit<32>, bit<1>, bit<32>>(reg_src_ip_5) reg_src_ip_5_action_read_set = {
-    //     void apply(inout bit<32> register_val, out bit<32> read_val) {
-    //         read_val = register_val;
-    //         register_val = (bit<32>)hdr.ipv4.src_addr;
-    //     }
-    // };
-
-    // Register<bit<32>,bit<1>>(1, 0) reg_dst_ip_5;
-    // RegisterAction<bit<32>, bit<1>, bit<32>>(reg_dst_ip_5) reg_dst_ip_5_action_read_set = {
-    //     void apply(inout bit<32> register_val, out bit<32> read_val) {
-    //         read_val = register_val;
-    //         register_val = (bit<32>)hdr.ipv4.dst_addr;
-    //     }
-    // };
-
-    // Register<bit<32>,bit<1>>(1, 0) reg_src_port_5;
-    // RegisterAction<bit<32>, bit<1>, bit<32>>(reg_src_port_5) reg_src_port_5_action_read_set = {
-    //     void apply(inout bit<32> register_val, out bit<32> read_val) {
-    //         read_val = register_val;
-    //         register_val = (bit<32>)hdr.udp.src_port;
-    //     }
-    // };
-
-    // Register<bit<32>,bit<1>>(1, 0) reg_dst_port_5;
-    // RegisterAction<bit<32>, bit<1>, bit<32>>(reg_dst_port_5) reg_dst_port_5_action_read_set = {
-    //     void apply(inout bit<32> register_val, out bit<32> read_val) {
-    //         read_val = register_val;
-    //         register_val = (bit<32>)hdr.udp.dst_port;
-    //     }
-    // };
-
-    // Register<bit<32>,bit<1>>(1, 0) reg_tcp_flag_5;
-    // RegisterAction<bit<32>, bit<1>, bit<32>>(reg_tcp_flag_5) reg_tcp_flag_5_action_read_set = {
-    //     void apply(inout bit<32> register_val, out bit<32> read_val) {
-    //         read_val = register_val;
-    //         register_val = (bit<32>)0;
-    //     }
-    // };
-
-    // Register<bit<32>,bit<1>>(1, 0) reg_tos_5;
-    // RegisterAction<bit<32>, bit<1>, bit<32>>(reg_tos_5) reg_tos_5_action_read_set = {
-    //     void apply(inout bit<32> register_val, out bit<32> read_val) {
-    //         read_val = register_val;
-    //         register_val = (bit<32>)hdr.ipv4.diffserv;
-    //     }
-    // };
-//********************* register_6 *********************//
-    // Register<bit<32>,bit<1>>(1, 0) reg_ingress_port_6;
-    // RegisterAction<bit<32>, bit<1>, bit<32>>(reg_ingress_port_6) reg_ingress_port_6_action_read_set = {
-    //     void apply(inout bit<32> register_val, out bit<32> read_val) {
-    //         read_val = register_val;
-    //         register_val = (bit<32>)ig_intr_md.ingress_port;
-    //     }
-    // };
-
-    // Register<bit<32>,bit<1>>(1, 0) reg_egress_port_6;
-    // RegisterAction<bit<32>, bit<1>, bit<32>>(reg_egress_port_6) reg_egress_port_6_action_read_set = {
-    //     void apply(inout bit<32> register_val, out bit<32> read_val) {
-    //         read_val = register_val;
-    //         register_val = (bit<32>) ig_tm_md.ucast_egress_port;
-    //     }
-    // };
-
-    // Register<bit<32>,bit<1>>(1, 0) reg_pkt_length_6;
-    // RegisterAction<bit<32>, bit<1>, bit<32>>(reg_pkt_length_6) reg_pkt_length_6_action_read_set = {
-    //     void apply(inout bit<32> register_val, out bit<32> read_val) {
-    //         read_val = register_val;
-    //         register_val = (bit<32>)hdr.ipv4.total_len;
-    //     }
-    // };
-
-    // Register<bit<32>,bit<1>>(1, 0) reg_protocol_6;
-    // RegisterAction<bit<32>, bit<1>, bit<32>>(reg_protocol_6) reg_protocol_6_action_read_set = {
-    //     void apply(inout bit<32> register_val, out bit<32> read_val) {
-    //         read_val = register_val;
-    //         register_val = (bit<32>)hdr.ipv4.protocol;
-    //     }
-    // };
-
-    // Register<bit<32>,bit<1>>(1, 0) reg_src_ip_6;
-    // RegisterAction<bit<32>, bit<1>, bit<32>>(reg_src_ip_6) reg_src_ip_6_action_read_set = {
-    //     void apply(inout bit<32> register_val, out bit<32> read_val) {
-    //         read_val = register_val;
-    //         register_val = (bit<32>)hdr.ipv4.src_addr;
-    //     }
-    // };
-
-    // Register<bit<32>,bit<1>>(1, 0) reg_dst_ip_6;
-    // RegisterAction<bit<32>, bit<1>, bit<32>>(reg_dst_ip_6) reg_dst_ip_6_action_read_set = {
-    //     void apply(inout bit<32> register_val, out bit<32> read_val) {
-    //         read_val = register_val;
-    //         register_val = (bit<32>)hdr.ipv4.dst_addr;
-    //     }
-    // };
-
-    // Register<bit<32>,bit<1>>(1, 0) reg_src_port_6;
-    // RegisterAction<bit<32>, bit<1>, bit<32>>(reg_src_port_6) reg_src_port_6_action_read_set = {
-    //     void apply(inout bit<32> register_val, out bit<32> read_val) {
-    //         read_val = register_val;
-    //         register_val = (bit<32>)hdr.udp.src_port;
-    //     }
-    // };
-
-    // Register<bit<32>,bit<1>>(1, 0) reg_dst_port_6;
-    // RegisterAction<bit<32>, bit<1>, bit<32>>(reg_dst_port_6) reg_dst_port_6_action_read_set = {
-    //     void apply(inout bit<32> register_val, out bit<32> read_val) {
-    //         read_val = register_val;
-    //         register_val = (bit<32>)hdr.udp.dst_port;
-    //     }
-    // };
-
-    // Register<bit<32>,bit<1>>(1, 0) reg_tcp_flag_6;
-    // RegisterAction<bit<32>, bit<1>, bit<32>>(reg_tcp_flag_6) reg_tcp_flag_6_action_read_set = {
-    //     void apply(inout bit<32> register_val, out bit<32> read_val) {
-    //         read_val = register_val;
-    //         register_val = (bit<32>)0;
-    //     }
-    // };
-
-    // Register<bit<32>,bit<1>>(1, 0) reg_tos_6;
-    // RegisterAction<bit<32>, bit<1>, bit<32>>(reg_tos_6) reg_tos_6_action_read_set = {
-    //     void apply(inout bit<32> register_val, out bit<32> read_val) {
-    //         read_val = register_val;
-    //         register_val = (bit<32>)hdr.ipv4.diffserv;
-    //     }
-    // };
-//********************* register_7 *********************//
-    // Register<bit<32>,bit<1>>(1, 0) reg_ingress_port_7;
-    // RegisterAction<bit<32>, bit<1>, bit<32>>(reg_ingress_port_7) reg_ingress_port_7_action_read_set = {
-    //     void apply(inout bit<32> register_val, out bit<32> read_val) {
-    //         read_val = register_val;
-    //         register_val = (bit<32>)ig_intr_md.ingress_port;
-    //     }
-    // };
-
-    // Register<bit<32>,bit<1>>(1, 0) reg_egress_port_7;
-    // RegisterAction<bit<32>, bit<1>, bit<32>>(reg_egress_port_7) reg_egress_port_7_action_read_set = {
-    //     void apply(inout bit<32> register_val, out bit<32> read_val) {
-    //         read_val = register_val;
-    //         register_val = (bit<32>) ig_tm_md.ucast_egress_port;
-    //     }
-    // };
-
-    // Register<bit<32>,bit<1>>(1, 0) reg_pkt_length_7;
-    // RegisterAction<bit<32>, bit<1>, bit<32>>(reg_pkt_length_7) reg_pkt_length_7_action_read_set = {
-    //     void apply(inout bit<32> register_val, out bit<32> read_val) {
-    //         read_val = register_val;
-    //         register_val = (bit<32>)hdr.ipv4.total_len;
-    //     }
-    // };
-
-    // Register<bit<32>,bit<1>>(1, 0) reg_protocol_7;
-    // RegisterAction<bit<32>, bit<1>, bit<32>>(reg_protocol_7) reg_protocol_7_action_read_set = {
-    //     void apply(inout bit<32> register_val, out bit<32> read_val) {
-    //         read_val = register_val;
-    //         register_val = (bit<32>)hdr.ipv4.protocol;
-    //     }
-    // };
-
-    // Register<bit<32>,bit<1>>(1, 0) reg_src_ip_7;
-    // RegisterAction<bit<32>, bit<1>, bit<32>>(reg_src_ip_7) reg_src_ip_7_action_read_set = {
-    //     void apply(inout bit<32> register_val, out bit<32> read_val) {
-    //         read_val = register_val;
-    //         register_val = (bit<32>)hdr.ipv4.src_addr;
-    //     }
-    // };
-
-    // Register<bit<32>,bit<1>>(1, 0) reg_dst_ip_7;
-    // RegisterAction<bit<32>, bit<1>, bit<32>>(reg_dst_ip_7) reg_dst_ip_7_action_read_set = {
-    //     void apply(inout bit<32> register_val, out bit<32> read_val) {
-    //         read_val = register_val;
-    //         register_val = (bit<32>)hdr.ipv4.dst_addr;
-    //     }
-    // };
-
-    // Register<bit<32>,bit<1>>(1, 0) reg_src_port_7;
-    // RegisterAction<bit<32>, bit<1>, bit<32>>(reg_src_port_7) reg_src_port_7_action_read_set = {
-    //     void apply(inout bit<32> register_val, out bit<32> read_val) {
-    //         read_val = register_val;
-    //         register_val = (bit<32>)hdr.udp.src_port;
-    //     }
-    // };
-
-    // Register<bit<32>,bit<1>>(1, 0) reg_dst_port_7;
-    // RegisterAction<bit<32>, bit<1>, bit<32>>(reg_dst_port_7) reg_dst_port_7_action_read_set = {
-    //     void apply(inout bit<32> register_val, out bit<32> read_val) {
-    //         read_val = register_val;
-    //         register_val = (bit<32>)hdr.udp.dst_port;
-    //     }
-    // };
-
-    // Register<bit<32>,bit<1>>(1, 0) reg_tcp_flag_7;
-    // RegisterAction<bit<32>, bit<1>, bit<32>>(reg_tcp_flag_7) reg_tcp_flag_7_action_read_set = {
-    //     void apply(inout bit<32> register_val, out bit<32> read_val) {
-    //         read_val = register_val;
-    //         register_val = (bit<32>)0;
-    //     }
-    // };
-
-    // Register<bit<32>,bit<1>>(1, 0) reg_tos_7;
-    // RegisterAction<bit<32>, bit<1>, bit<32>>(reg_tos_7) reg_tos_7_action_read_set = {
-    //     void apply(inout bit<32> register_val, out bit<32> read_val) {
-    //         read_val = register_val;
-    //         register_val = (bit<32>)hdr.ipv4.diffserv;
-    //     }
-    // };
+    Register<bit<32>,bit<1>>(1, 0) reg_tos_4;
+    RegisterAction<bit<32>, bit<1>, bit<32>>(reg_tos_4) reg_tos_4_action_read_set = {
+        void apply(inout bit<32> register_val, out bit<32> read_val) {
+            read_val = register_val;
+            register_val = (bit<32>)hdr.ipv4.diffserv;
+        }
+    }; 
 //******************************************************//
-       
-    // action multicast() {
-    //     ig_tm_md.mcast_grp_a = 1;
-    //     hdr.ipv4.ttl = hdr.ipv4.ttl - 1;
-    // }
-
-    // action broadcast() {
-    //     ig_tm_md.mcast_grp_a = 1;
-    // }
 
     action send_multicast(bit<16> grp_id, bit<16> rid) {
         ig_tm_md.mcast_grp_a = grp_id;
         ig_tm_md.rid = rid;
     }
 
-    // action simple_forward(PortId_t port) {
-    //     ig_tm_md.ucast_egress_port = port;
-    // }
-
-    // action send_back() {
-    //     ig_tm_md.ucast_egress_port = ig_intr_md.ingress_port;
-    //     hdr.ethernet.dst_addr = hdr.ethernet.src_addr;
-    //     hdr.ipv4.dst_addr = hdr.ipv4.src_addr;
-    // }
 
     action ipv4_forward(PortId_t port) {
         ig_tm_md.ucast_egress_port = port;
@@ -784,148 +533,101 @@ control MyIngress(
         size = 1024;
         default_action = NoAction;
     }
-//     action set_egress_144() {
-//     ig_tm_md.ucast_egress_port = 144;
-// }
-
-//     table t_set_egress_144 {
-//         actions = {
-//             set_egress_144;
-//             NoAction;
-//         }
-//         size = 1;
-//         default_action = set_egress_144;
-//     }
 
     
     apply {
         ipv4_table.apply();
-        // mac_table.apply();
-        // multicast();
-        // if(ig_intr_md.ingress_port == 144){
-        //     send_multicast(1, 1);
-        // }
-        // if (hdr.ethernet.ether_type == ETHERTYPE_ARP) {
-        //     // multicast();
-        // }
+
         
-        // ig_tm_md.ucast_egress_port = 144;
-        bit<32> total_packet; 
-        if( ig_intr_md.ingress_port == 144){
+        bit<9> tmp_ingress_port;
+        bit<32> total_packet;
+        if(ig_intr_md.ingress_port == 144){
+            tmp_ingress_port =1;
             total_packet = set_total_packet.execute(0);
+        }else if(ig_intr_md.ingress_port == 145){
+            tmp_ingress_port =10000;
+            // total_packet = set_total_packet.execute(0);
+        }else if(ig_intr_md.ingress_port == 149){
+            tmp_ingress_port =10000;
+            // total_packet = set_total_packet.execute(0);
+        }else if(ig_intr_md.ingress_port == 147){
+            tmp_ingress_port = 10000;
+            // total_packet = set_total_packet.execute(0);
         }else{
-            total_packet = 1;
+            tmp_ingress_port = 10000;
+            // total_packet = 2;
         }
-      
-        if(total_packet % 256 == 0 && ig_intr_md.ingress_port == 144){
-            bit<32> total_sample = set_total_sample.execute(0);
-            if(total_sample == 1){
-                hdr.sflow_sample_0.input_if = reg_ingress_port_0_action_read_set.execute(0);
-                hdr.sflow_sample_0.output_if = reg_egress_port_0_action_read_set.execute(0);
-                hdr.sflow_sample_0.pkt_length = reg_pkt_length_0_action_read_set.execute(0);
-                hdr.sflow_sample_0.protocol = reg_protocol_0_action_read_set.execute(0);
-                hdr.sflow_sample_0.src_ip = reg_src_ip_0_action_read_set.execute(0);
-                hdr.sflow_sample_0.dst_ip = reg_dst_ip_0_action_read_set.execute(0);
-                hdr.sflow_sample_0.src_port = reg_src_port_0_action_read_set.execute(0);
-                hdr.sflow_sample_0.dst_port = reg_dst_port_0_action_read_set.execute(0);
-                hdr.sflow_sample_0.tcp_flags = reg_tcp_flag_0_action_read_set.execute(0);
-                hdr.sflow_sample_0.tos = reg_tos_0_action_read_set.execute(0);
-                // t_set_egress_144.apply();
-            }else if (total_sample == 2){
-                hdr.sflow_sample_1.input_if = reg_ingress_port_1_action_read_set.execute(0);
-                hdr.sflow_sample_1.output_if = reg_egress_port_1_action_read_set.execute(0);
-                hdr.sflow_sample_1.pkt_length = reg_pkt_length_1_action_read_set.execute(0);
-                hdr.sflow_sample_1.protocol = reg_protocol_1_action_read_set.execute(0);
-                hdr.sflow_sample_1.src_ip = reg_src_ip_1_action_read_set.execute(0);
-                hdr.sflow_sample_1.dst_ip = reg_dst_ip_1_action_read_set.execute(0);
-                hdr.sflow_sample_1.src_port = reg_src_port_1_action_read_set.execute(0);
-                hdr.sflow_sample_1.dst_port = reg_dst_port_1_action_read_set.execute(0);
-                hdr.sflow_sample_1.tcp_flags = reg_tcp_flag_1_action_read_set.execute(0);
-                hdr.sflow_sample_1.tos = reg_tos_1_action_read_set.execute(0);
-            }else if (total_sample == 3){
-                hdr.sflow_sample_2.input_if = reg_ingress_port_2_action_read_set.execute(0);
-                hdr.sflow_sample_2.output_if = reg_egress_port_2_action_read_set.execute(0);
-                hdr.sflow_sample_2.pkt_length = reg_pkt_length_2_action_read_set.execute(0);
-                hdr.sflow_sample_2.protocol = reg_protocol_2_action_read_set.execute(0);
-                hdr.sflow_sample_2.src_ip = reg_src_ip_2_action_read_set.execute(0);
-                hdr.sflow_sample_2.dst_ip = reg_dst_ip_2_action_read_set.execute(0);
-                hdr.sflow_sample_2.src_port = reg_src_port_2_action_read_set.execute(0);
-                hdr.sflow_sample_2.dst_port = reg_dst_port_2_action_read_set.execute(0);
-                hdr.sflow_sample_2.tcp_flags = reg_tcp_flag_2_action_read_set.execute(0);
-                hdr.sflow_sample_2.tos = reg_tos_2_action_read_set.execute(0);
-   
-            }else{
-                hdr.sflow_sample_3.input_if = reg_ingress_port_3_action_read_set.execute(0);
-                hdr.sflow_sample_3.output_if = reg_egress_port_3_action_read_set.execute(0);
-                hdr.sflow_sample_3.pkt_length = reg_pkt_length_3_action_read_set.execute(0);
-                hdr.sflow_sample_3.protocol = reg_protocol_3_action_read_set.execute(0);
-                hdr.sflow_sample_3.src_ip = reg_src_ip_3_action_read_set.execute(0);
-                hdr.sflow_sample_3.dst_ip = reg_dst_ip_3_action_read_set.execute(0);
-                hdr.sflow_sample_3.src_port = reg_src_port_3_action_read_set.execute(0);
-                hdr.sflow_sample_3.dst_port = reg_dst_port_3_action_read_set.execute(0);
-                hdr.sflow_sample_3.tcp_flags = reg_tcp_flag_3_action_read_set.execute(0);
-                hdr.sflow_sample_3.tos = reg_tos_3_action_read_set.execute(0);
-                send_multicast(1, 1);
-   
-            }
-            // else{
-            //     hdr.sflow_sample_4.input_if = reg_ingress_port_4_action_read_set.execute(0);
-            //     hdr.sflow_sample_4.output_if = reg_egress_port_4_action_read_set.execute(0);
-            //     hdr.sflow_sample_4.pkt_length = reg_pkt_length_4_action_read_set.execute(0);
-            //     hdr.sflow_sample_4.protocol = reg_protocol_4_action_read_set.execute(0);
-            //     hdr.sflow_sample_4.src_ip = reg_src_ip_4_action_read_set.execute(0);
-            //     hdr.sflow_sample_4.dst_ip = reg_dst_ip_4_action_read_set.execute(0);
-            //     hdr.sflow_sample_4.src_port = reg_src_port_4_action_read_set.execute(0);
-            //     hdr.sflow_sample_4.dst_port = reg_dst_port_4_action_read_set.execute(0);
-            //     hdr.sflow_sample_4.tcp_flags = reg_tcp_flag_4_action_read_set.execute(0);
-            //     hdr.sflow_sample_4.tos = reg_tos_4_action_read_set.execute(0);
-            //     send_multicast(1, 1);
-            // }
-            // else{
-            //     hdr.sflow_sample_5.input_if = reg_ingress_port_5_action_read_set.execute(0);
-            //     hdr.sflow_sample_5.output_if = reg_egress_port_5_action_read_set.execute(0);
-            //     hdr.sflow_sample_5.pkt_length = reg_pkt_length_5_action_read_set.execute(0);
-            //     hdr.sflow_sample_5.protocol = reg_protocol_5_action_read_set.execute(0);
-            //     hdr.sflow_sample_5.src_ip = reg_src_ip_5_action_read_set.execute(0);
-            //     hdr.sflow_sample_5.dst_ip = reg_dst_ip_5_action_read_set.execute(0);
-            //     hdr.sflow_sample_5.src_port = reg_src_port_5_action_read_set.execute(0);
-            //     hdr.sflow_sample_5.dst_port = reg_dst_port_5_action_read_set.execute(0);
-            //     hdr.sflow_sample_5.tcp_flags = reg_tcp_flag_5_action_read_set.execute(0);
-            //     hdr.sflow_sample_5.tos = reg_tos_5_action_read_set.execute(0);
-            //     send_multicast(1, 1);
-            // }
-            // else{
-            //     hdr.sflow_sample_6.input_if = reg_ingress_port_6_action_read_set.execute(0);
-            //     hdr.sflow_sample_6.output_if = reg_egress_port_6_action_read_set.execute(0);
-            //     hdr.sflow_sample_6.pkt_length = reg_pkt_length_6_action_read_set.execute(0);
-            //     hdr.sflow_sample_6.protocol = reg_protocol_6_action_read_set.execute(0);
-            //     hdr.sflow_sample_6.src_ip = reg_src_ip_6_action_read_set.execute(0);
-            //     hdr.sflow_sample_6.dst_ip = reg_dst_ip_6_action_read_set.execute(0);
-            //     hdr.sflow_sample_6.src_port = reg_src_port_6_action_read_set.execute(0);
-            //     hdr.sflow_sample_6.dst_port = reg_dst_port_6_action_read_set.execute(0);
-            //     hdr.sflow_sample_6.tcp_flags = reg_tcp_flag_6_action_read_set.execute(0);
-            //     hdr.sflow_sample_6.tos = reg_tos_6_action_read_set.execute(0);
-            //     send_multicast(1, 1);
-   
-            // }
-            // else{
-            //     hdr.sflow_sample_7.input_if = reg_ingress_port_7_action_read_set.execute(0);
-            //     hdr.sflow_sample_7.output_if = reg_egress_port_7_action_read_set.execute(0);
-            //     hdr.sflow_sample_7.pkt_length = reg_pkt_length_7_action_read_set.execute(0);
-            //     hdr.sflow_sample_7.protocol = reg_protocol_7_action_read_set.execute(0);
-            //     hdr.sflow_sample_7.src_ip = reg_src_ip_7_action_read_set.execute(0);
-            //     hdr.sflow_sample_7.dst_ip = reg_dst_ip_7_action_read_set.execute(0);
-            //     hdr.sflow_sample_7.src_port = reg_src_port_7_action_read_set.execute(0);
-            //     hdr.sflow_sample_7.dst_port = reg_dst_port_7_action_read_set.execute(0);
-            //     hdr.sflow_sample_7.tcp_flags = reg_tcp_flag_7_action_read_set.execute(0);
-            //     send_multicast(1, 1);
-                
-            // }
+
+        if(tmp_ingress_port == 1 && total_packet % 1024 == 0){
+          
+                bit<32> total_sample = set_total_sample.execute(0);
+                if(total_sample == 1){
+                    hdr.sflow_sample_0.input_if = reg_ingress_port_0_action_read_set.execute(0);
+                    hdr.sflow_sample_0.output_if = reg_egress_port_0_action_read_set.execute(0);
+                    hdr.sflow_sample_0.pkt_length = reg_pkt_length_0_action_read_set.execute(0);
+                    hdr.sflow_sample_0.protocol = reg_protocol_0_action_read_set.execute(0);
+                    hdr.sflow_sample_0.src_ip = reg_src_ip_0_action_read_set.execute(0);
+                    hdr.sflow_sample_0.dst_ip = reg_dst_ip_0_action_read_set.execute(0);
+                    hdr.sflow_sample_0.src_port = reg_src_port_0_action_read_set.execute(0);
+                    hdr.sflow_sample_0.dst_port = reg_dst_port_0_action_read_set.execute(0);
+                    hdr.sflow_sample_0.tcp_flags = reg_tcp_flag_0_action_read_set.execute(0);
+                    hdr.sflow_sample_0.tos = reg_tos_0_action_read_set.execute(0);
+                }else if (total_sample == 2){
+                    hdr.sflow_sample_1.input_if = reg_ingress_port_1_action_read_set.execute(0);
+                    hdr.sflow_sample_1.output_if = reg_egress_port_1_action_read_set.execute(0);
+                    hdr.sflow_sample_1.pkt_length = reg_pkt_length_1_action_read_set.execute(0);
+                    hdr.sflow_sample_1.protocol = reg_protocol_1_action_read_set.execute(0);
+                    hdr.sflow_sample_1.src_ip = reg_src_ip_1_action_read_set.execute(0);
+                    hdr.sflow_sample_1.dst_ip = reg_dst_ip_1_action_read_set.execute(0);
+                    hdr.sflow_sample_1.src_port = reg_src_port_1_action_read_set.execute(0);
+                    hdr.sflow_sample_1.dst_port = reg_dst_port_1_action_read_set.execute(0);
+                    hdr.sflow_sample_1.tcp_flags = reg_tcp_flag_1_action_read_set.execute(0);
+                    hdr.sflow_sample_1.tos = reg_tos_1_action_read_set.execute(0);
+                }else if (total_sample == 3){
+                    hdr.sflow_sample_2.input_if = reg_ingress_port_2_action_read_set.execute(0);
+                    hdr.sflow_sample_2.output_if = reg_egress_port_2_action_read_set.execute(0);
+                    hdr.sflow_sample_2.pkt_length = reg_pkt_length_2_action_read_set.execute(0);
+                    hdr.sflow_sample_2.protocol = reg_protocol_2_action_read_set.execute(0);
+                    hdr.sflow_sample_2.src_ip = reg_src_ip_2_action_read_set.execute(0);
+                    hdr.sflow_sample_2.dst_ip = reg_dst_ip_2_action_read_set.execute(0);
+                    hdr.sflow_sample_2.src_port = reg_src_port_2_action_read_set.execute(0);
+                    hdr.sflow_sample_2.dst_port = reg_dst_port_2_action_read_set.execute(0);
+                    hdr.sflow_sample_2.tcp_flags = reg_tcp_flag_2_action_read_set.execute(0);
+                    hdr.sflow_sample_2.tos = reg_tos_2_action_read_set.execute(0);
+    
+                }
+                else {
+                    hdr.sflow_sample_3.input_if = reg_ingress_port_3_action_read_set.execute(0);
+                    hdr.sflow_sample_3.output_if = reg_egress_port_3_action_read_set.execute(0);
+                    hdr.sflow_sample_3.pkt_length = reg_pkt_length_3_action_read_set.execute(0);
+                    hdr.sflow_sample_3.protocol = reg_protocol_3_action_read_set.execute(0);
+                    hdr.sflow_sample_3.src_ip = reg_src_ip_3_action_read_set.execute(0);
+                    hdr.sflow_sample_3.dst_ip = reg_dst_ip_3_action_read_set.execute(0);
+                    hdr.sflow_sample_3.src_port = reg_src_port_3_action_read_set.execute(0);
+                    hdr.sflow_sample_3.dst_port = reg_dst_port_3_action_read_set.execute(0);
+                    hdr.sflow_sample_3.tcp_flags = reg_tcp_flag_3_action_read_set.execute(0);
+                    send_multicast(1, 1);
+                    
+                }
+                // else {
+                //     hdr.sflow_sample_4.input_if = reg_ingress_port_4_action_read_set.execute(0);
+                //     hdr.sflow_sample_4.output_if = reg_egress_port_4_action_read_set.execute(0);
+                //     hdr.sflow_sample_4.pkt_length = reg_pkt_length_4_action_read_set.execute(0);
+                //     hdr.sflow_sample_4.protocol = reg_protocol_4_action_read_set.execute(0);
+                //     hdr.sflow_sample_4.src_ip = reg_src_ip_4_action_read_set.execute(0);
+                //     hdr.sflow_sample_4.dst_ip = reg_dst_ip_4_action_read_set.execute(0);
+                //     hdr.sflow_sample_4.src_port = reg_src_port_4_action_read_set.execute(0);
+                //     hdr.sflow_sample_4.dst_port = reg_dst_port_4_action_read_set.execute(0);
+                //     hdr.sflow_sample_4.tcp_flags = reg_tcp_flag_4_action_read_set.execute(0);
+                //     send_multicast(1, 1);
+                // }
+
+            
         }else if(ig_intr_md.ingress_port == 132){
-            // ig_tm_md.ucast_egress_port = 144;
+            ig_tm_md.ucast_egress_port = 147;
             hdr.udp.dst_port = (bit<16>)6343;
-            // hdr.udp.hdr_length = (bit<16>)356;
-            hdr.udp.hdr_length = (bit<16>)756;
+            hdr.udp.hdr_length = (bit<16>)356;
+            hdr.ipv4.dst_addr = 0x0a0a0302;
             hdr.sflow_hd.setValid();
             hdr.sflow_hd.version = (bit<32>)5;
             hdr.sflow_hd.address_type = (bit<32>)1;
@@ -1023,97 +725,9 @@ control MyIngress(
             hdr.sflow_sample_3.tcp_flags = reg_tcp_flag_3_action_read_set.execute(0);
             hdr.sflow_sample_3.tos = reg_tos_3_action_read_set.execute(0);
 
-            // hdr.sflow_sample_4.setValid();
-            // hdr.sflow_sample_4.sample_type = (bit<32>)1;
-            // hdr.sflow_sample_4.sample_length = (bit<32>)80;
-            // hdr.sflow_sample_4.sample_seq_num = (bit<32>)1;
-            // hdr.sflow_sample_4.source_id = (bit<32>)1;
-            // hdr.sflow_sample_4.sampling_rate = (bit<32>)256;
-            // hdr.sflow_sample_4.sample_pool = (bit<32>)1;
-            // hdr.sflow_sample_4.drops = (bit<32>)0;
-            // hdr.sflow_sample_4.record_count = (bit<32>)1;
-            // hdr.sflow_sample_4.enterprise_format = (bit<32>)1;
-            // hdr.sflow_sample_4.flow_length = (bit<32>)32;
-            // hdr.sflow_sample_4.input_if = reg_ingress_port_4_action_read_set.execute(0);
-            // hdr.sflow_sample_4.output_if = reg_egress_port_4_action_read_set.execute(0);
-            // hdr.sflow_sample_4.pkt_length = reg_pkt_length_4_action_read_set.execute(0);
-            // hdr.sflow_sample_4.protocol = reg_protocol_4_action_read_set.execute(0);
-            // hdr.sflow_sample_4.src_ip = reg_src_ip_4_action_read_set.execute(0);
-            // hdr.sflow_sample_4.dst_ip = reg_dst_ip_4_action_read_set.execute(0);
-            // hdr.sflow_sample_4.src_port = reg_src_port_4_action_read_set.execute(0);
-            // hdr.sflow_sample_4.dst_port = reg_dst_port_4_action_read_set.execute(0);
-            // hdr.sflow_sample_4.tcp_flags = reg_tcp_flag_4_action_read_set.execute(0);
-            // hdr.sflow_sample_4.tos = reg_tos_4_action_read_set.execute(0);
 
-            // hdr.sflow_sample_5.setValid();
-            // hdr.sflow_sample_5.sample_type = (bit<32>)1;
-            // hdr.sflow_sample_5.sample_length = (bit<32>)80;
-            // hdr.sflow_sample_5.sample_seq_num = (bit<32>)1;
-            // hdr.sflow_sample_5.source_id = (bit<32>)1;
-            // hdr.sflow_sample_5.sampling_rate = (bit<32>)256;
-            // hdr.sflow_sample_5.sample_pool = (bit<32>)1;
-            // hdr.sflow_sample_5.drops = (bit<32>)0;
-            // hdr.sflow_sample_5.record_count = (bit<32>)1;
-            // hdr.sflow_sample_5.enterprise_format = (bit<32>)1;
-            // hdr.sflow_sample_5.flow_length = (bit<32>)32;
-            // hdr.sflow_sample_5.input_if = reg_ingress_port_5_action_read_set.execute(0);
-            // hdr.sflow_sample_5.output_if = reg_egress_port_5_action_read_set.execute(0);
-            // hdr.sflow_sample_5.pkt_length = reg_pkt_length_5_action_read_set.execute(0);
-            // hdr.sflow_sample_5.protocol = reg_protocol_5_action_read_set.execute(0);
-            // hdr.sflow_sample_5.src_ip = reg_src_ip_5_action_read_set.execute(0);
-            // hdr.sflow_sample_5.dst_ip = reg_dst_ip_5_action_read_set.execute(0);
-            // hdr.sflow_sample_5.src_port = reg_src_port_5_action_read_set.execute(0);
-            // hdr.sflow_sample_5.dst_port = reg_dst_port_5_action_read_set.execute(0);
-            // hdr.sflow_sample_5.tcp_flags = reg_tcp_flag_5_action_read_set.execute(0);
-            // hdr.sflow_sample_5.tos = reg_tos_5_action_read_set.execute(0);
+            hdr.ipv4.total_len = (bit<16>)376;
 
-            // hdr.sflow_sample_6.setValid();
-            // hdr.sflow_sample_6.sample_type = (bit<32>)1;
-            // hdr.sflow_sample_6.sample_length = (bit<32>)80;
-            // hdr.sflow_sample_6.sample_seq_num = (bit<32>)1;
-            // hdr.sflow_sample_6.source_id = (bit<32>)1;
-            // hdr.sflow_sample_6.sampling_rate = (bit<32>)256;
-            // hdr.sflow_sample_6.sample_pool = (bit<32>)1;
-            // hdr.sflow_sample_6.drops = (bit<32>)0;
-            // hdr.sflow_sample_6.record_count = (bit<32>)1;
-            // hdr.sflow_sample_6.enterprise_format = (bit<32>)1;
-            // hdr.sflow_sample_6.flow_length = (bit<32>)32;
-            // hdr.sflow_sample_6.input_if = reg_ingress_port_6_action_read_set.execute(0);
-            // hdr.sflow_sample_6.output_if = reg_egress_port_6_action_read_set.execute(0);
-            // hdr.sflow_sample_6.pkt_length = reg_pkt_length_6_action_read_set.execute(0);
-            // hdr.sflow_sample_6.protocol = reg_protocol_6_action_read_set.execute(0);
-            // hdr.sflow_sample_6.src_ip = reg_src_ip_6_action_read_set.execute(0);
-            // hdr.sflow_sample_6.dst_ip = reg_dst_ip_6_action_read_set.execute(0);
-            // hdr.sflow_sample_6.src_port = reg_src_port_6_action_read_set.execute(0);
-            // hdr.sflow_sample_6.dst_port = reg_dst_port_6_action_read_set.execute(0);
-            // hdr.sflow_sample_6.tcp_flags = reg_tcp_flag_6_action_read_set.execute(0);
-            // hdr.sflow_sample_6.tos = reg_tos_6_action_read_set.execute(0);
-
-            // hdr.sflow_sample_7.setValid();
-            // hdr.sflow_sample_7.sample_type = (bit<32>)1;
-            // hdr.sflow_sample_7.sample_length = (bit<32>)80;
-            // hdr.sflow_sample_7.sample_seq_num = (bit<32>)1;
-            // hdr.sflow_sample_7.source_id = (bit<32>)1;
-            // hdr.sflow_sample_7.sampling_rate = (bit<32>)256;
-            // hdr.sflow_sample_7.sample_pool = (bit<32>)1;
-            // hdr.sflow_sample_7.drops = (bit<32>)0;
-            // hdr.sflow_sample_7.record_count = (bit<32>)1;
-            // hdr.sflow_sample_7.enterprise_format = (bit<32>)1;
-            // hdr.sflow_sample_7.flow_length = (bit<32>)32;
-            // hdr.sflow_sample_7.input_if = reg_ingress_port_7_action_read_set.execute(0);
-            // hdr.sflow_sample_7.output_if = reg_egress_port_7_action_read_set.execute(0);
-            // hdr.sflow_sample_7.pkt_length = reg_pkt_length_7_action_read_set.execute(0);
-            // hdr.sflow_sample_7.protocol = reg_protocol_7_action_read_set.execute(0);
-            // hdr.sflow_sample_7.src_ip = reg_src_ip_7_action_read_set.execute(0);
-            // hdr.sflow_sample_7.dst_ip = reg_dst_ip_7_action_read_set.execute(0);
-            // hdr.sflow_sample_7.src_port = reg_src_port_7_action_read_set.execute(0);
-            // hdr.sflow_sample_7.dst_port = reg_dst_port_7_action_read_set.execute(0);
-            // hdr.sflow_sample_7.tcp_flags = reg_tcp_flag_7_action_read_set.execute(0);
-            // hdr.sflow_sample_7.tos = reg_tos_7_action_read_set.execute(0);
-
-
-            // hdr.ipv4.total_len = (bit<16>)376;
-            hdr.ipv4.total_len = (bit<16>)776;
         }
 
     }
@@ -1251,107 +865,10 @@ control MyIngressDeparser(packet_out pkt,
                     hdr.sflow_sample_3.dst_port,
                     hdr.sflow_sample_3.tcp_flags,
                     hdr.sflow_sample_3.tos
-
-                    // hdr.sflow_sample_4.sample_type,
-                    // hdr.sflow_sample_4.sample_length,
-                    // hdr.sflow_sample_4.sample_seq_num,
-                    // hdr.sflow_sample_4.source_id,
-                    // hdr.sflow_sample_4.sampling_rate,
-                    // hdr.sflow_sample_4.sample_pool,
-                    // hdr.sflow_sample_4.drops,
-                    // hdr.sflow_sample_4.input_if,
-                    // hdr.sflow_sample_4.output_if,
-                    // hdr.sflow_sample_4.record_count,
-                    // hdr.sflow_sample_4.enterprise_format,
-                    // hdr.sflow_sample_4.flow_length,
-                    // hdr.sflow_sample_4.pkt_length,
-                    // hdr.sflow_sample_4.protocol,
-                    // hdr.sflow_sample_4.src_ip,
-                    // hdr.sflow_sample_4.dst_ip,
-                    // hdr.sflow_sample_4.src_port,
-                    // hdr.sflow_sample_4.dst_port,
-                    // hdr.sflow_sample_4.tcp_flags,
-                    // hdr.sflow_sample_4.tos
-
-                    // hdr.sflow_sample_5.sample_type,
-                    // hdr.sflow_sample_5.sample_length,
-                    // hdr.sflow_sample_5.sample_seq_num,
-                    // hdr.sflow_sample_5.source_id,
-                    // hdr.sflow_sample_5.sampling_rate,
-                    // hdr.sflow_sample_5.sample_pool,
-                    // hdr.sflow_sample_5.drops,
-                    // hdr.sflow_sample_5.input_if,
-                    // hdr.sflow_sample_5.output_if,
-                    // hdr.sflow_sample_5.record_count,
-                    // hdr.sflow_sample_5.enterprise_format,
-                    // hdr.sflow_sample_5.flow_length,
-                    // hdr.sflow_sample_5.pkt_length,
-                    // hdr.sflow_sample_5.protocol,
-                    // hdr.sflow_sample_5.src_ip,
-                    // hdr.sflow_sample_5.dst_ip,
-                    // hdr.sflow_sample_5.src_port,
-                    // hdr.sflow_sample_5.dst_port,
-                    // hdr.sflow_sample_5.tcp_flags,
-                    // hdr.sflow_sample_5.tos
-
-                    // hdr.sflow_sample_6.sample_type,
-                    // hdr.sflow_sample_6.sample_length,
-                    // hdr.sflow_sample_6.sample_seq_num,
-                    // hdr.sflow_sample_6.source_id,
-                    // hdr.sflow_sample_6.sampling_rate,
-                    // hdr.sflow_sample_6.sample_pool,
-                    // hdr.sflow_sample_6.drops,
-                    // hdr.sflow_sample_6.input_if,
-                    // hdr.sflow_sample_6.output_if,
-                    // hdr.sflow_sample_6.record_count,
-                    // hdr.sflow_sample_6.enterprise_format,
-                    // hdr.sflow_sample_6.flow_length,
-                    // hdr.sflow_sample_6.pkt_length,
-                    // hdr.sflow_sample_6.protocol,
-                    // hdr.sflow_sample_6.src_ip,
-                    // hdr.sflow_sample_6.dst_ip,
-                    // hdr.sflow_sample_6.src_port,
-                    // hdr.sflow_sample_6.dst_port,
-                    // hdr.sflow_sample_6.tcp_flags,
-                    // hdr.sflow_sample_6.tos
-
-                    // hdr.sflow_sample_7.sample_type,
-                    // hdr.sflow_sample_7.sample_length,
-                    // hdr.sflow_sample_7.sample_seq_num,
-                    // hdr.sflow_sample_7.source_id,
-                    // hdr.sflow_sample_7.sampling_rate,
-                    // hdr.sflow_sample_7.sample_pool,
-                    // hdr.sflow_sample_7.drops,
-                    // hdr.sflow_sample_7.input_if,
-                    // hdr.sflow_sample_7.output_if,
-                    // hdr.sflow_sample_7.record_count,
-                    // hdr.sflow_sample_7.enterprise_format,
-                    // hdr.sflow_sample_7.flow_length,
-                    // hdr.sflow_sample_7.pkt_length,
-                    // hdr.sflow_sample_7.protocol,
-                    // hdr.sflow_sample_7.src_ip,
-                    // hdr.sflow_sample_7.dst_ip,
-                    // hdr.sflow_sample_7.src_port,
-                    // hdr.sflow_sample_7.dst_port,
-                    // hdr.sflow_sample_7.tcp_flags,
-                    // hdr.sflow_sample_7.tos
-
-                    
                 });
             }
         }
 
-        
-
-
-        // if (ig_dprsr_md.mirror_type == MIRROR_TYPE_t.I2E) {
-        //     m.emit<mirror_h>(meta.eg_mir_ses,{(bit<16>)0});
-        //     hdr.mirror.setInvalid();
-        //     // hdr.udp.dst_port = (bit<16>)6344;
-
-        // }
-        // pkt.emit(hdr.mirror);
-        // pkt.emit(hdr.bridge);
         pkt.emit(hdr.ethernet);
         pkt.emit(hdr.ipv4);
         pkt.emit(hdr.tcp);
@@ -1380,7 +897,6 @@ parser MyEgressParser(
     }
 
     state parse_bridge {
-        // pkt.extract(hdr.bridge);
         transition parse_ethernet;
     }
 
@@ -1410,27 +926,10 @@ control MyEgress(
         eg_intr_dprs_md.drop_ctl = 0b1;
     }
 
-    // table reflect {
-    //     key = {
-    //         hdr.ipv4.src_addr: exact;
-    //         eg_intr_md.egress_port: exact;
-    //     }
 
-    //     actions = {
-    //         drop;
-    //         NoAction;
-    //     }
-
-    //     default_action = NoAction;
-    // }
 
     apply {
-        // bit<9> in_port  = (bit<9>) eg_md.ingress_port;
-        // bit<9> out_port = (bit<9>) eg_intr_md.egress_port;
 
-        // if (eg_md.ingress_port == 147) {
-        //     drop();
-        // }
  
     }
 }
