@@ -80,30 +80,21 @@ control MyIngress(
                   inout ingress_intrinsic_metadata_for_tm_t ig_tm_md) {
 
 //register             
-    // Register<bit<32>, bit<1>>(1,0) total_packets_reg;
-    // RegisterAction<bit<32>, bit<1>, bit<32>>(total_packets_reg)
-    //     set_total_packet = {
-    //         void apply(inout bit<32> v, out bit<32> new_val) {
-    //             if (v == 999){
-    //                 v = 0;
-    //             }else{
-    //                 v       = v + 1;
-    //             }
-    //             new_val = v; 
-    //             // v       = v + 1;
-    //             // new_val = v;          // 把 +1 後的值回傳
-    //         }
-    // };
-    Register<bit<10>, bit<1>>(1,0) total_packets_reg;
-
-    RegisterAction<bit<10>, bit<1>, bit<10>>(total_packets_reg)
-    set_total_packet = {
-        void apply(inout bit<10> v, out bit<10> new_val) {
-            // 自然 10-bit 回繞（0..1023）
-            v = v + 1;
-            new_val = v;
-        }
+    Register<bit<32>, bit<1>>(1,0) total_packets_reg;
+    RegisterAction<bit<32>, bit<1>, bit<32>>(total_packets_reg)
+        set_total_packet = {
+            void apply(inout bit<32> v, out bit<32> new_val) {
+                if (v == 999){
+                    v = 0;
+                }else{
+                    v       = v + 1;
+                }
+                new_val = v; 
+                // v       = v + 1;
+                // new_val = v;          // 把 +1 後的值回傳
+            }
     };
+
 
     Register<bit<32>, bit<1>>(1,0) total_sample_count;
     RegisterAction<bit<32>, bit<1>, bit<32>>(total_sample_count)
@@ -549,7 +540,7 @@ control MyIngress(
 
         
         bit<9> tmp_ingress_port;
-        bit<10> total_packet;
+        bit<32> total_packet;
         if(ig_intr_md.ingress_port == 144){
             tmp_ingress_port =1;
             total_packet = set_total_packet.execute(0);
