@@ -559,9 +559,10 @@ control MyIngress(
         }
 
         if(tmp_ingress_port == 1 && total_packet % 1024 == 0){
-          
+
                 bit<32> total_sample = set_total_sample.execute(0);
                 if(total_sample == 1){
+                    hdr.sflow_sample_0.setValid();
                     hdr.sflow_sample_0.input_if = reg_ingress_port_0_action_read_set.execute(0);
                     hdr.sflow_sample_0.output_if = reg_egress_port_0_action_read_set.execute(0);
                     hdr.sflow_sample_0.pkt_length = reg_pkt_length_0_action_read_set.execute(0);
@@ -573,6 +574,7 @@ control MyIngress(
                     hdr.sflow_sample_0.tcp_flags = reg_tcp_flag_0_action_read_set.execute(0);
                     hdr.sflow_sample_0.tos = reg_tos_0_action_read_set.execute(0);
                 }else if (total_sample == 2){
+                    hdr.sflow_sample_1.setValid();
                     hdr.sflow_sample_1.input_if = reg_ingress_port_1_action_read_set.execute(0);
                     hdr.sflow_sample_1.output_if = reg_egress_port_1_action_read_set.execute(0);
                     hdr.sflow_sample_1.pkt_length = reg_pkt_length_1_action_read_set.execute(0);
@@ -584,6 +586,7 @@ control MyIngress(
                     hdr.sflow_sample_1.tcp_flags = reg_tcp_flag_1_action_read_set.execute(0);
                     hdr.sflow_sample_1.tos = reg_tos_1_action_read_set.execute(0);
                 }else if (total_sample == 3){
+                    hdr.sflow_sample_2.setValid();
                     hdr.sflow_sample_2.input_if = reg_ingress_port_2_action_read_set.execute(0);
                     hdr.sflow_sample_2.output_if = reg_egress_port_2_action_read_set.execute(0);
                     hdr.sflow_sample_2.pkt_length = reg_pkt_length_2_action_read_set.execute(0);
@@ -597,6 +600,7 @@ control MyIngress(
     
                 }
                 else if (total_sample == 3){
+                    hdr.sflow_sample_3.setValid();
                     hdr.sflow_sample_3.input_if = reg_ingress_port_3_action_read_set.execute(0);
                     hdr.sflow_sample_3.output_if = reg_egress_port_3_action_read_set.execute(0);
                     hdr.sflow_sample_3.pkt_length = reg_pkt_length_3_action_read_set.execute(0);
