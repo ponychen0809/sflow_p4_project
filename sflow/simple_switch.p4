@@ -596,7 +596,7 @@ control MyIngress(
                     hdr.sflow_sample_2.tos = reg_tos_2_action_read_set.execute(0);
     
                 }
-                else if (total_sample == 4){
+                else {
                     hdr.sflow_sample_3.input_if = reg_ingress_port_3_action_read_set.execute(0);
                     hdr.sflow_sample_3.output_if = reg_egress_port_3_action_read_set.execute(0);
                     hdr.sflow_sample_3.pkt_length = reg_pkt_length_3_action_read_set.execute(0);
@@ -606,27 +606,27 @@ control MyIngress(
                     hdr.sflow_sample_3.src_port = reg_src_port_3_action_read_set.execute(0);
                     hdr.sflow_sample_3.dst_port = reg_dst_port_3_action_read_set.execute(0);
                     hdr.sflow_sample_3.tcp_flags = reg_tcp_flag_3_action_read_set.execute(0);
-
+                    send_multicast(1, 1);
                     
                 }
-                else {
-                    hdr.sflow_sample_4.input_if = reg_ingress_port_4_action_read_set.execute(0);
-                    hdr.sflow_sample_4.output_if = reg_egress_port_4_action_read_set.execute(0);
-                    hdr.sflow_sample_4.pkt_length = reg_pkt_length_4_action_read_set.execute(0);
-                    hdr.sflow_sample_4.protocol = reg_protocol_4_action_read_set.execute(0);
-                    hdr.sflow_sample_4.src_ip = reg_src_ip_4_action_read_set.execute(0);
-                    hdr.sflow_sample_4.dst_ip = reg_dst_ip_4_action_read_set.execute(0);
-                    hdr.sflow_sample_4.src_port = reg_src_port_4_action_read_set.execute(0);
-                    hdr.sflow_sample_4.dst_port = reg_dst_port_4_action_read_set.execute(0);
-                    hdr.sflow_sample_4.tcp_flags = reg_tcp_flag_4_action_read_set.execute(0);
-                    send_multicast(1, 1);
-                }
+                // else {
+                //     hdr.sflow_sample_4.input_if = reg_ingress_port_4_action_read_set.execute(0);
+                //     hdr.sflow_sample_4.output_if = reg_egress_port_4_action_read_set.execute(0);
+                //     hdr.sflow_sample_4.pkt_length = reg_pkt_length_4_action_read_set.execute(0);
+                //     hdr.sflow_sample_4.protocol = reg_protocol_4_action_read_set.execute(0);
+                //     hdr.sflow_sample_4.src_ip = reg_src_ip_4_action_read_set.execute(0);
+                //     hdr.sflow_sample_4.dst_ip = reg_dst_ip_4_action_read_set.execute(0);
+                //     hdr.sflow_sample_4.src_port = reg_src_port_4_action_read_set.execute(0);
+                //     hdr.sflow_sample_4.dst_port = reg_dst_port_4_action_read_set.execute(0);
+                //     hdr.sflow_sample_4.tcp_flags = reg_tcp_flag_4_action_read_set.execute(0);
+                //     send_multicast(1, 1);
+                // }
 
             
         }else if(ig_intr_md.ingress_port == 132){
             ig_tm_md.ucast_egress_port = 147;
             hdr.udp.dst_port = (bit<16>)6343;
-            hdr.udp.hdr_length = (bit<16>)436;
+            hdr.udp.hdr_length = (bit<16>)356;
             hdr.ipv4.dst_addr = 0x0a0a0302;
             hdr.sflow_hd.setValid();
             hdr.sflow_hd.version = (bit<32>)5;
@@ -635,7 +635,7 @@ control MyIngress(
             hdr.sflow_hd.sub_agent_id = (bit<32>)5;
             hdr.sflow_hd.sequence_number = (bit<32>)5;
             hdr.sflow_hd.uptime = (bit<32>)12345;
-            hdr.sflow_hd.samples = (bit<32>)5;
+            hdr.sflow_hd.samples = (bit<32>)4;
 
             hdr.sflow_sample_0.setValid();
             hdr.sflow_sample_0.sample_type = (bit<32>)1;
@@ -864,28 +864,7 @@ control MyIngressDeparser(packet_out pkt,
                     hdr.sflow_sample_3.src_port,
                     hdr.sflow_sample_3.dst_port,
                     hdr.sflow_sample_3.tcp_flags,
-                    hdr.sflow_sample_3.tos,
-
-                    hdr.sflow_sample_4.sample_type,
-                    hdr.sflow_sample_4.sample_length,
-                    hdr.sflow_sample_4.sample_seq_num,
-                    hdr.sflow_sample_4.source_id,
-                    hdr.sflow_sample_4.sampling_rate,
-                    hdr.sflow_sample_4.sample_pool,
-                    hdr.sflow_sample_4.drops,
-                    hdr.sflow_sample_4.input_if,
-                    hdr.sflow_sample_4.output_if,
-                    hdr.sflow_sample_4.record_count,
-                    hdr.sflow_sample_4.enterprise_format,
-                    hdr.sflow_sample_4.flow_length,
-                    hdr.sflow_sample_4.pkt_length,
-                    hdr.sflow_sample_4.protocol,
-                    hdr.sflow_sample_4.src_ip,
-                    hdr.sflow_sample_4.dst_ip,
-                    hdr.sflow_sample_4.src_port,
-                    hdr.sflow_sample_4.dst_port,
-                    hdr.sflow_sample_4.tcp_flags,
-                    hdr.sflow_sample_4.tos
+                    hdr.sflow_sample_3.tos
                 });
             }
         }
@@ -899,7 +878,6 @@ control MyIngressDeparser(packet_out pkt,
         pkt.emit(hdr.sflow_sample_1);
         pkt.emit(hdr.sflow_sample_2);
         pkt.emit(hdr.sflow_sample_3);
-        pkt.emit(hdr.sflow_sample_4);
     }
 }
 
