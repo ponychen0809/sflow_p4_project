@@ -539,26 +539,22 @@ control MyIngress(
         ipv4_table.apply();
 
         
-        bit<9> tmp_ingress_port;
+        bit<9> do_sample;
         bit<32> total_packet;
         if(ig_intr_md.ingress_port == 144){
-            tmp_ingress_port =1;
+            do_sample =1;
             total_packet = set_total_packet.execute(0);
         }else if(ig_intr_md.ingress_port == 145){
-            tmp_ingress_port =10000;
-            // total_packet = set_total_packet.execute(0);
+            do_sample =0;
         }else if(ig_intr_md.ingress_port == 149){
-            tmp_ingress_port =10000;
-            // total_packet = set_total_packet.execute(0);
+            do_sample =0;
         }else if(ig_intr_md.ingress_port == 147){
-            tmp_ingress_port = 10000;
-            // total_packet = set_total_packet.execute(0);
+            do_sample = 0;
         }else{
-            tmp_ingress_port = 10000;
-            // total_packet = 2;
+            do_sample = 0;
         }
 
-        if(tmp_ingress_port == 1 && total_packet % 1024 == 0){
+        if(do_sample == 1 && total_packet % 1024 == 0){
           
                 bit<32> total_sample = set_total_sample.execute(0);
                 if(total_sample == 1){
@@ -609,18 +605,6 @@ control MyIngress(
                     send_multicast(1, 1);
                     
                 }
-                // else {
-                //     hdr.sflow_sample_4.input_if = reg_ingress_port_4_action_read_set.execute(0);
-                //     hdr.sflow_sample_4.output_if = reg_egress_port_4_action_read_set.execute(0);
-                //     hdr.sflow_sample_4.pkt_length = reg_pkt_length_4_action_read_set.execute(0);
-                //     hdr.sflow_sample_4.protocol = reg_protocol_4_action_read_set.execute(0);
-                //     hdr.sflow_sample_4.src_ip = reg_src_ip_4_action_read_set.execute(0);
-                //     hdr.sflow_sample_4.dst_ip = reg_dst_ip_4_action_read_set.execute(0);
-                //     hdr.sflow_sample_4.src_port = reg_src_port_4_action_read_set.execute(0);
-                //     hdr.sflow_sample_4.dst_port = reg_dst_port_4_action_read_set.execute(0);
-                //     hdr.sflow_sample_4.tcp_flags = reg_tcp_flag_4_action_read_set.execute(0);
-                //     send_multicast(1, 1);
-                // }
 
             
         }else if(ig_intr_md.ingress_port == 132){
