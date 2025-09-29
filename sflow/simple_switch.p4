@@ -682,7 +682,7 @@ control MyIngress(
 
     action ipv4_forward(PortId_t port) {
         ig_tm_md.ucast_egress_port = port;
-        sampling();
+        // sampling();
     }
     table ipv4_table{
         key = {
