@@ -1,0 +1,1 @@
+sudo ./udp_sender enp1s0 pony 1000 10.10.3.2 22222 32
